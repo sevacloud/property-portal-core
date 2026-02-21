@@ -1,3 +1,4 @@
+# .github/workflows/deploy.yml
 name: Deploy WordPress plugin via SFTP (IONOS)
 
 on:
@@ -10,23 +11,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Deploy via SFTP
+      - name: Deploy via SFTP (lftp mirror)
         uses: pressidium/lftp-mirror-action@v1
         with:
           host: ${{ secrets.SFTP_HOST }}
           port: ${{ secrets.SFTP_PORT }}
           user: ${{ secrets.SFTP_USER }}
           pass: ${{ secrets.SFTP_PASS }}
-          remoteDir: ${{ secrets.SFTP_REMOTE_DIR }}
           localDir: .
-          # Keep repo-only files out of production
-          exclude: |
-            .git/
-            .github/
-            .vscode/
-            **/*.log
-            node_modules/
-            dist/
-            **/.DS_Store
-            **/Thumbs.db
+          remoteDir: ${{ secrets.SFTP_REMOTE_DIR }}
+          restoreMTime: true
+          # Optional: speeds up uploads (tune if needed)
+          parallel: 3
