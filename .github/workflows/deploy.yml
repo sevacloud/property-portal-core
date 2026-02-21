@@ -1,4 +1,4 @@
-name: Deploy WordPress Plugin (SFTP)
+name: Deploy WordPress plugin via SFTP (IONOS)
 
 on:
   push:
@@ -12,23 +12,21 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Deploy via SFTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        uses: pressidium/lftp-mirror-action@v1
         with:
-          server: ${{ secrets.SFTP_HOST }}
-          username: ${{ secrets.SFTP_USER }}
-          password: ${{ secrets.SFTP_PASS }}
+          host: ${{ secrets.SFTP_HOST }}
           port: ${{ secrets.SFTP_PORT }}
-          protocol: sftp
-
-          local-dir: ./
-          server-dir: ${{ secrets.SFTP_REMOTE_DIR }}
-
+          user: ${{ secrets.SFTP_USER }}
+          pass: ${{ secrets.SFTP_PASS }}
+          remoteDir: ${{ secrets.SFTP_REMOTE_DIR }}
+          localDir: .
+          # Keep repo-only files out of production
           exclude: |
-            **/.git*
-            **/.github/**
-            **/.vscode/**
+            .git/
+            .github/
+            .vscode/
             **/*.log
-            **/node_modules/**
-            **/dist/**
+            node_modules/
+            dist/
             **/.DS_Store
             **/Thumbs.db
