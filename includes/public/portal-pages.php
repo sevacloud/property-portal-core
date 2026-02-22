@@ -73,6 +73,283 @@ add_shortcode('ppc_portal_layout', function ($atts) {
 });
 
 /**
+ * Dashboard (default portal landing view).
+ * Used by ppc_portal_layout when content="dashboard" (default).
+ */
+add_shortcode('ppc_pm_dashboard', function () {
+    if (!is_user_logged_in() || !function_exists('ppc_is_staff_user') || !ppc_is_staff_user()) {
+        return '<p>Access denied.</p>';
+    }
+
+    $user_id = get_current_user_id();
+
+    // "Open" statuses (everything except complete/cancelled)
+    $closed_statuses = ['complete', 'cancelled'];
+
+    // Helper: safely get a property title from the ACF post_object field (stored as ID in meta)
+    $get_property_title = function (int $repair_id): string {
+        $prop = get_field('repair_property', $repair_id);
+        if (is_object($prop) && !empty($prop->post_title)) return (string) $prop->post_title;
+        if (is_numeric($prop) && (int)$prop > 0) return get_the_title((int)$prop) ?: '';
+        return '';
+    };
+
+    // Helper: owner display
+    $get_owner_name = function (int $repair_id): string {
+        $owner = get_field('repair_owner', $repair_id);
+        if (is_array($owner) && !empty($owner['display_name'])) return (string) $owner['display_name'];
+        if (is_object($owner) && !empty($owner->display_name)) return (string) $owner->display_name;
+        if (is_numeric($owner) && (int)$owner > 0) {
+            $u = get_user_by('id', (int)$owner);
+            return $u ? (string) $u->display_name : '';
+        }
+        return '';
+    };
+
+    // Helper: simple date formatting (stored as Y-m-d)
+    $fmt_date = function ($ymd): string {
+        if (!$ymd) return '';
+        $ts = strtotime((string)$ymd);
+        if (!$ts) return '';
+        return date('d M Y', $ts);
+    };
+
+    // Query: My Open Repairs
+    $my_repairs = get_posts([
+        'post_type'      => 'ppm_repair',
+        'post_status'    => 'publish',
+        'posts_per_page' => 10,
+        'orderby'        => 'date',
+        'order'          => 'DESC',
+        'meta_query'     => [
+            'relation' => 'AND',
+            [
+                'key'     => 'repair_owner',
+                'value'   => (string) $user_id,
+                'compare' => '=',
+            ],
+            [
+                'relation' => 'OR',
+                [
+                    'key'     => 'repair_status',
+                    'compare' => 'NOT EXISTS',
+                ],
+                [
+                    'key'     => 'repair_status',
+                    'value'   => $closed_statuses,
+                    'compare' => 'NOT IN',
+                ],
+            ],
+        ],
+    ]);
+
+    // Query: All Open Repairs
+    $open_repairs = get_posts([
+        'post_type'      => 'ppm_repair',
+        'post_status'    => 'publish',
+        'posts_per_page' => 10,
+        'orderby'        => 'date',
+        'order'          => 'DESC',
+        'meta_query'     => [
+            'relation' => 'OR',
+            [
+                'key'     => 'repair_status',
+                'compare' => 'NOT EXISTS',
+            ],
+            [
+                'key'     => 'repair_status',
+                'value'   => $closed_statuses,
+                'compare' => 'NOT IN',
+            ],
+        ],
+    ]);
+
+    // Query: Active Voids (not completed)
+    $active_voids = get_posts([
+        'post_type'      => 'ppm_void',
+        'post_status'    => 'publish',
+        'posts_per_page' => 8,
+        'orderby'        => 'date',
+        'order'          => 'DESC',
+        'meta_query'     => [
+            'relation' => 'OR',
+            [
+                'key'     => 'void_stage',
+                'compare' => 'NOT EXISTS',
+            ],
+            [
+                'key'     => 'void_stage',
+                'value'   => ['completed'],
+                'compare' => 'NOT IN',
+            ],
+        ],
+    ]);
+
+    ob_start(); ?>
+
+    <div style="display:flex;flex-direction:column;gap:16px;">
+        <header style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+            <div>
+                <h1 style="margin:0 0 6px 0;">Dashboard</h1>
+                <div style="color:#555;">Quick view of repairs and voids.</div>
+            </div>
+
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                <a href="<?php echo esc_url(ppc_portal_url('add-repair')); ?>"
+                   style="text-decoration:none;border:1px solid #cfcfcf;border-radius:10px;padding:10px 12px;color:#111;background:#fff;font-weight:700;">
+                    + Add Repair
+                </a>
+                <a href="<?php echo esc_url(ppc_portal_url('add-property')); ?>"
+                   style="text-decoration:none;border:1px solid #cfcfcf;border-radius:10px;padding:10px 12px;color:#111;background:#fff;font-weight:700;">
+                    + Add Property
+                </a>
+                <a href="<?php echo esc_url(ppc_portal_url('add-void')); ?>"
+                   style="text-decoration:none;border:1px solid #cfcfcf;border-radius:10px;padding:10px 12px;color:#111;background:#fff;font-weight:700;">
+                    + Start Void
+                </a>
+            </div>
+        </header>
+
+        <section style="border:1px solid #ddd;border-radius:14px;padding:14px;background:#fff;">
+            <h2 style="margin:0 0 10px 0;font-size:16px;">My Open Repairs</h2>
+
+            <?php if (empty($my_repairs)): ?>
+                <p style="margin:0;color:#555;">No open repairs assigned to you.</p>
+            <?php else: ?>
+                <div style="overflow:auto;">
+                    <table style="width:100%;border-collapse:collapse;min-width:720px;">
+                        <thead>
+                        <tr>
+                            <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Property</th>
+                            <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Summary</th>
+                            <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Priority</th>
+                            <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Status</th>
+                            <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Target</th>
+                            <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach ($my_repairs as $r): ?>
+                            <?php
+                            $prop_title = $get_property_title($r->ID);
+                            $priority   = (string) get_field('repair_priority', $r->ID);
+                            $status     = (string) get_field('repair_status', $r->ID);
+                            $due        = get_field('repair_due_date', $r->ID);
+                            ?>
+                            <tr>
+                                <td style="padding:10px;border-bottom:1px solid #f2f2f2;"><?php echo esc_html($prop_title ?: '—'); ?></td>
+                                <td style="padding:10px;border-bottom:1px solid #f2f2f2;"><?php echo esc_html(get_field('repair_summary', $r->ID) ?: $r->post_title); ?></td>
+                                <td style="padding:10px;border-bottom:1px solid #f2f2f2;"><?php echo esc_html($priority ?: '—'); ?></td>
+                                <td style="padding:10px;border-bottom:1px solid #f2f2f2;"><?php echo esc_html($status ?: '—'); ?></td>
+                                <td style="padding:10px;border-bottom:1px solid #f2f2f2;"><?php echo esc_html($fmt_date($due) ?: '—'); ?></td>
+                                <td style="padding:10px;border-bottom:1px solid #f2f2f2;">
+                                    <a href="<?php echo esc_url(ppc_edit_url('repair', (int)$r->ID)); ?>" style="font-weight:700;">View / Edit</a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
+        </section>
+
+        <section style="border:1px solid #ddd;border-radius:14px;padding:14px;background:#fff;">
+            <h2 style="margin:0 0 10px 0;font-size:16px;">All Open Repairs</h2>
+
+            <?php if (empty($open_repairs)): ?>
+                <p style="margin:0;color:#555;">No open repairs found.</p>
+            <?php else: ?>
+                <div style="overflow:auto;">
+                    <table style="width:100%;border-collapse:collapse;min-width:820px;">
+                        <thead>
+                        <tr>
+                            <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Property</th>
+                            <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Summary</th>
+                            <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Owner</th>
+                            <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Priority</th>
+                            <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Status</th>
+                            <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Target</th>
+                            <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach ($open_repairs as $r): ?>
+                            <?php
+                            $prop_title = $get_property_title($r->ID);
+                            $owner_name = $get_owner_name($r->ID);
+                            $priority   = (string) get_field('repair_priority', $r->ID);
+                            $status     = (string) get_field('repair_status', $r->ID);
+                            $due        = get_field('repair_due_date', $r->ID);
+                            ?>
+                            <tr>
+                                <td style="padding:10px;border-bottom:1px solid #f2f2f2;"><?php echo esc_html($prop_title ?: '—'); ?></td>
+                                <td style="padding:10px;border-bottom:1px solid #f2f2f2;"><?php echo esc_html(get_field('repair_summary', $r->ID) ?: $r->post_title); ?></td>
+                                <td style="padding:10px;border-bottom:1px solid #f2f2f2;"><?php echo esc_html($owner_name ?: 'Unassigned'); ?></td>
+                                <td style="padding:10px;border-bottom:1px solid #f2f2f2;"><?php echo esc_html($priority ?: '—'); ?></td>
+                                <td style="padding:10px;border-bottom:1px solid #f2f2f2;"><?php echo esc_html($status ?: '—'); ?></td>
+                                <td style="padding:10px;border-bottom:1px solid #f2f2f2;"><?php echo esc_html($fmt_date($due) ?: '—'); ?></td>
+                                <td style="padding:10px;border-bottom:1px solid #f2f2f2;">
+                                    <a href="<?php echo esc_url(ppc_edit_url('repair', (int)$r->ID)); ?>" style="font-weight:700;">View / Edit</a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
+        </section>
+
+        <section style="border:1px solid #ddd;border-radius:14px;padding:14px;background:#fff;">
+            <h2 style="margin:0 0 10px 0;font-size:16px;">Active Voids</h2>
+
+            <?php if (empty($active_voids)): ?>
+                <p style="margin:0;color:#555;">No active voids found.</p>
+            <?php else: ?>
+                <div style="overflow:auto;">
+                    <table style="width:100%;border-collapse:collapse;min-width:720px;">
+                        <thead>
+                        <tr>
+                            <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Property</th>
+                            <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Stage</th>
+                            <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Start</th>
+                            <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Target</th>
+                            <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach ($active_voids as $v): ?>
+                            <?php
+                            $prop = get_field('void_property', $v->ID);
+                            $prop_title = is_object($prop) && !empty($prop->post_title)
+                                ? (string) $prop->post_title
+                                : (is_numeric($prop) ? (get_the_title((int)$prop) ?: '') : '');
+
+                            $stage = (string) get_field('void_stage', $v->ID);
+                            $start = get_field('void_start_date', $v->ID);
+                            $target = get_field('void_target_date', $v->ID);
+                            ?>
+                            <tr>
+                                <td style="padding:10px;border-bottom:1px solid #f2f2f2;"><?php echo esc_html($prop_title ?: '—'); ?></td>
+                                <td style="padding:10px;border-bottom:1px solid #f2f2f2;"><?php echo esc_html($stage ?: '—'); ?></td>
+                                <td style="padding:10px;border-bottom:1px solid #f2f2f2;"><?php echo esc_html($fmt_date($start) ?: '—'); ?></td>
+                                <td style="padding:10px;border-bottom:1px solid #f2f2f2;"><?php echo esc_html($fmt_date($target) ?: '—'); ?></td>
+                                <td style="padding:10px;border-bottom:1px solid #f2f2f2;">
+                                    <a href="<?php echo esc_url(ppc_edit_url('void', (int)$v->ID)); ?>" style="font-weight:700;">View / Edit</a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
+        </section>
+    </div>
+
+    <?php
+    return ob_get_clean();
+});
+
+/**
  * PROPERTY create/edit form.
  */
 add_shortcode('ppc_property_form', function ($atts) {
