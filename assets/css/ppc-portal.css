@@ -11,6 +11,12 @@
   line-height: 1.5;
   color: var(--ppc-color-text);
   background: var(--ppc-color-bg);
+
+  /* Layout shell: sidebar left, content right */
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
 }
 
 .ppc-app p {
@@ -47,6 +53,9 @@
   height: fit-content;
   position: sticky;
   top: 20px;
+
+  /* Make sure the grid items behave */
+  width: 100%;
 }
 
 .ppc-sidebar__title {
@@ -64,6 +73,7 @@
 
 /* Portal page container spacing */
 .ppc-main {
+  min-width: 0; /* prevents table/content overflow from breaking layout */
   padding-bottom: 40px;
 }
 
