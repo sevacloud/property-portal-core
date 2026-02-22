@@ -264,13 +264,14 @@
 
 .ppc-app {
   /* Brand / Primary */
-  --ppc-color-primary: #1f2937;
-  --ppc-color-primary-light: #374151;
+  --ppc-color-primary: #049c3d;
+  --ppc-color-primary-accent: #722d75;
+  --ppc-color-primary-light: #ac62a7;
 
   /* Headings */
   --ppc-color-h1: #1a1a1a;
-  --ppc-color-h2: #1a1a1a;
-  --ppc-color-h3: #1a1a1a;
+  --ppc-color-h2: #049c3d;
+  --ppc-color-h3: #722d75;
   --ppc-color-h4: #1a1a1a;
   --ppc-color-h5: #1a1a1a;
   --ppc-color-h6: #1a1a1a;
@@ -283,11 +284,11 @@
 
   /* Backgrounds */
   --ppc-color-bg: #ffffff;
-  --ppc-color-bg-subtle: #f9fafb;
+  --ppc-color-bg-subtle: #ac62a7;
 
   /* Borders */
-  --ppc-color-border: #e5e7eb;
-  --ppc-color-border-strong: #d1d5db;
+  --ppc-color-border: #ac62a7;
+  --ppc-color-border-strong: #722d75;
 
   /* States */
   --ppc-color-success: #15803d;
