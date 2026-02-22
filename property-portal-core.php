@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Property Portal Core
  * Description: Core portal logic for staff property/void/repair management.
- * Version: 0.4.0
+ * Version: 0.5.0
  * Author: Liamarjit @ Seva Cloud
  */
 

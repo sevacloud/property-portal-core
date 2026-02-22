@@ -8,12 +8,12 @@
     sans-serif;
   font-size: 14px;
   line-height: 1.5;
-  color: #1a1a1a;
+  color: var(--ppc-color-primary);
 }
 
 /* Consistent vertical rhythm */
 .ppc-app p {
-  color: #666;
+  color: #000;
   margin: 0 0 12px 0;
 }
 
@@ -24,7 +24,7 @@
 }
 
 .ppc-app a {
-  color: #1a1a1a;
+  color: var(--ppc-color-text-link);
   text-decoration: none;
 }
 
@@ -72,7 +72,7 @@
   border: 1px solid #cfcfcf;
   border-radius: 10px;
   padding: 10px 12px;
-  color: #111;
+  color: var(--ppc-color-text);
   background: #fff;
   font-weight: 700;
 }
@@ -81,7 +81,7 @@
   border: none;
   padding: 0;
   background: transparent;
-  color: #b42318;
+  color: var(--ppc-color-danger);
   font-weight: 700;
 }
 
@@ -111,7 +111,7 @@
 }
 
 .ppc-muted {
-  color: #555;
+  color: var(--ppc-color-text-muted);
 }
 
 .ppc-header {
@@ -132,6 +132,7 @@
   line-height: 1.2;
   font-weight: 800;
   letter-spacing: -0.01em;
+  color: var(--ppc-color-h1);
 }
 
 .ppc-h2 {
@@ -139,6 +140,7 @@
   font-size: 18px;
   line-height: 1.25;
   font-weight: 800;
+  color: var(--ppc-color-h2);
 }
 
 .ppc-h3 {
@@ -146,6 +148,7 @@
   font-size: 16px;
   line-height: 1.3;
   font-weight: 700;
+  color: var(--ppc-color-h3);
 }
 
 .ppc-h4 {
@@ -153,6 +156,7 @@
   font-size: 14px;
   line-height: 1.35;
   font-weight: 700;
+  color: var(--ppc-color-h4);
 }
 
 .ppc-h5 {
@@ -162,6 +166,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.02em;
+  color: var(--ppc-color-h5);
 }
 
 .ppc-h6 {
@@ -171,7 +176,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: #666;
+  color: var(--ppc-color-h6);
 }
 
 /* Tables */
@@ -215,4 +220,47 @@
   .ppc-sidebar {
     position: static;
   }
+}
+
+/* =========================================================
+   Portal Design Tokens
+   ========================================================= */
+
+.ppc-app {
+  /* Brand / Primary */
+  --ppc-color-primary: #1f2937;
+  --ppc-color-primary-light: #374151;
+
+  /* Headings */
+  --ppc-color-h1: #1a1a1a;
+  --ppc-color-h2: #1a1a1a;
+  --ppc-color-h3: #1a1a1a;
+  --ppc-color-h4: #1a1a1a;
+  --ppc-color-h5: #1a1a1a;
+  --ppc-color-h6: #1a1a1a;
+
+  /* Text */
+  --ppc-color-text: #1a1a1a;
+  --ppc-color-text-muted: #666666;
+  --ppc-color-text-light: #888888;
+  --ppc-color-text-link: #0e20e4;
+
+  /* Backgrounds */
+  --ppc-color-bg: #ffffff;
+  --ppc-color-bg-subtle: #f9fafb;
+
+  /* Borders */
+  --ppc-color-border: #e5e7eb;
+  --ppc-color-border-strong: #d1d5db;
+
+  /* States */
+  --ppc-color-success: #15803d;
+  --ppc-color-warning: #b45309;
+  --ppc-color-danger: #b42318;
+
+  /* Radius */
+  --ppc-radius: 14px;
+
+  /* Shadow */
+  --ppc-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
