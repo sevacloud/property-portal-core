@@ -241,7 +241,6 @@ add_shortcode('ppc_pm_dashboard', function () {
                             <th class="ppc-th">Priority</th>
                             <th class="ppc-th">Status</th>
                             <th class="ppc-th">Target</th>
-                            <th class="ppc-th">Action</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -253,14 +252,16 @@ add_shortcode('ppc_pm_dashboard', function () {
                             $due        = get_field('repair_due_date', $r->ID);
                             ?>
                             <tr>
+                                <td class="ppc-td">
+                                    <a class="ppc-link"
+                                    href="<?php echo esc_url(ppc_edit_url('repair', (int)$r->ID)); ?>">
+                                        <?php echo esc_html(get_field('repair_summary', $r->ID) ?: $r->post_title); ?>
+                                    </a>
+                                </td>
                                 <td class="ppc-td"><?php echo esc_html($prop_title ?: '—'); ?></td>
-                                <td class="ppc-td"><?php echo esc_html(get_field('repair_summary', $r->ID) ?: $r->post_title); ?></td>
                                 <td class="ppc-td"><?php echo esc_html($priority ?: '—'); ?></td>
                                 <td class="ppc-td"><?php echo esc_html($status ?: '—'); ?></td>
                                 <td class="ppc-td"><?php echo esc_html($fmt_date($due) ?: '—'); ?></td>
-                                <td class="ppc-td">
-                                    <a class="ppc-link" href="<?php echo esc_url(ppc_edit_url('repair', (int)$r->ID)); ?>">View / Edit</a>
-                                </td>
                             </tr>
                         <?php endforeach; ?>
                         </tbody>
@@ -285,7 +286,6 @@ add_shortcode('ppc_pm_dashboard', function () {
                             <th class="ppc-th">Priority</th>
                             <th class="ppc-th">Status</th>
                             <th class="ppc-th">Target</th>
-                            <th class="ppc-th">Action</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -298,15 +298,17 @@ add_shortcode('ppc_pm_dashboard', function () {
                             $due        = get_field('repair_due_date', $r->ID);
                             ?>
                             <tr>
+                                <td class="ppc-td">
+                                    <a class="ppc-link"
+                                    href="<?php echo esc_url(ppc_edit_url('repair', (int)$r->ID)); ?>">
+                                        <?php echo esc_html(get_field('repair_summary', $r->ID) ?: $r->post_title); ?>
+                                    </a>
+                                </td>
                                 <td class="ppc-td"><?php echo esc_html($prop_title ?: '—'); ?></td>
-                                <td class="ppc-td"><?php echo esc_html(get_field('repair_summary', $r->ID) ?: $r->post_title); ?></td>
                                 <td class="ppc-td"><?php echo esc_html($owner_name ?: 'Unassigned'); ?></td>
                                 <td class="ppc-td"><?php echo esc_html($priority ?: '—'); ?></td>
                                 <td class="ppc-td"><?php echo esc_html($status ?: '—'); ?></td>
                                 <td class="ppc-td"><?php echo esc_html($fmt_date($due) ?: '—'); ?></td>
-                                <td class="ppc-td">
-                                    <a class="ppc-link" href="<?php echo esc_url(ppc_edit_url('repair', (int)$r->ID)); ?>">View / Edit</a>
-                                </td>
                             </tr>
                         <?php endforeach; ?>
                         </tbody>
@@ -329,7 +331,6 @@ add_shortcode('ppc_pm_dashboard', function () {
                             <th class="ppc-th">Stage</th>
                             <th class="ppc-th">Start</th>
                             <th class="ppc-th">Target</th>
-                            <th class="ppc-th">Action</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -345,13 +346,15 @@ add_shortcode('ppc_pm_dashboard', function () {
                             $target = get_field('void_target_date', $v->ID);
                             ?>
                             <tr>
-                                <td class="ppc-td"><?php echo esc_html($prop_title ?: '—'); ?></td>
+                                <td class="ppc-td">
+                                    <a class="ppc-link"
+                                    href="<?php echo esc_url(ppc_edit_url('void', (int)$v->ID)); ?>">
+                                        <?php echo esc_html($prop_title ?: '—'); ?>
+                                    </a>
+                                </td>
                                 <td class="ppc-td"><?php echo esc_html($stage ?: '—'); ?></td>
                                 <td class="ppc-td"><?php echo esc_html($fmt_date($start) ?: '—'); ?></td>
                                 <td class="ppc-td"><?php echo esc_html($fmt_date($target) ?: '—'); ?></td>
-                                <td class="ppc-td">
-                                    <a class="ppc-link" href="<?php echo esc_url(ppc_edit_url('void', (int)$v->ID)); ?>">View / Edit</a>
-                                </td>
                             </tr>
                         <?php endforeach; ?>
                         </tbody>
@@ -406,7 +409,6 @@ add_shortcode('ppc_properties_overview', function () {
                         <tr>
                             <th class="ppc-th">Property</th>
                             <th class="ppc-th">Created</th>
-                            <th class="ppc-th">Action</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -414,9 +416,6 @@ add_shortcode('ppc_properties_overview', function () {
                             <tr>
                                 <td class="ppc-td"><?php echo esc_html($p->post_title ?: '—'); ?></td>
                                 <td class="ppc-td"><?php echo esc_html(date('d M Y', strtotime($p->post_date))); ?></td>
-                                <td class="ppc-td">
-                                    <a class="ppc-link" href="<?php echo esc_url(ppc_edit_url('property', (int)$p->ID)); ?>">View / Edit</a>
-                                </td>
                             </tr>
                         <?php endforeach; ?>
                         </tbody>
@@ -475,7 +474,6 @@ add_shortcode('ppc_repairs_overview', function () {
                             <th class="ppc-th">Priority</th>
                             <th class="ppc-th">Status</th>
                             <th class="ppc-th">Target</th>
-                            <th class="ppc-th">Action</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -495,9 +493,6 @@ add_shortcode('ppc_repairs_overview', function () {
                                 <td class="ppc-td"><?php echo esc_html($priority ?: '—'); ?></td>
                                 <td class="ppc-td"><?php echo esc_html($status ?: '—'); ?></td>
                                 <td class="ppc-td"><?php echo esc_html(ppc_fmt_date($due) ?: '—'); ?></td>
-                                <td class="ppc-td">
-                                    <a class="ppc-link" href="<?php echo esc_url(ppc_edit_url('repair', (int)$r->ID)); ?>">View / Edit</a>
-                                </td>
                             </tr>
                         <?php endforeach; ?>
                         </tbody>
@@ -570,9 +565,6 @@ add_shortcode('ppc_voids_overview', function () {
                                 <td class="ppc-td"><?php echo esc_html($stage ?: '—'); ?></td>
                                 <td class="ppc-td"><?php echo esc_html(ppc_fmt_date($start) ?: '—'); ?></td>
                                 <td class="ppc-td"><?php echo esc_html(ppc_fmt_date($target) ?: '—'); ?></td>
-                                <td class="ppc-td">
-                                    <a class="ppc-link" href="<?php echo esc_url(ppc_edit_url('void', (int)$v->ID)); ?>">View / Edit</a>
-                                </td>
                             </tr>
                         <?php endforeach; ?>
                         </tbody>

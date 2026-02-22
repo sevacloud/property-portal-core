@@ -243,6 +243,11 @@
   color: var(--ppc-color-text-link);
 }
 
+.ppc-link:hover {
+  text-decoration: underline;
+  color: var(--ppc-color-text-link-hover);
+}
+
 /* =========================================================
    Mobile
    ========================================================= */
@@ -280,6 +285,7 @@
   --ppc-color-text-muted: #666666;
   --ppc-color-text-light: #888888;
   --ppc-color-text-link: #0e20e4;
+  --ppc-color-text-link-hover: #049c3d;
 
   /* Backgrounds */
   --ppc-color-bg: #ffffff;
