@@ -17,6 +17,35 @@ function ppc_edit_url(string $type, int $id): string {
 }
 
 /**
+ * Enqueue the CSS only on portal pages
+ * (So it doesn’t affect the rest of the site)
+ */
+add_action('wp_enqueue_scripts', function () {
+    // Only load for staff (optional but nice)
+    if (!is_user_logged_in() || !function_exists('ppc_is_staff_user') || !ppc_is_staff_user()) return;
+
+    // Only load on portal pages (dashboard + form pages)
+    $slugs = [
+        'property-management',
+        'add-property',
+        'edit-property',
+        'add-repair',
+        'edit-repair',
+        'add-void',
+        'edit-void',
+    ];
+
+    if (!is_page($slugs)) return;
+
+    wp_enqueue_style(
+        'ppc-portal',
+        PPC_URL . 'assets/css/ppc-portal.css',
+        [],
+        '0.1.0'
+    );
+});
+
+/**
  * Layout shell with sidebar.
  * Usage: [ppc_portal_layout content="dashboard"]
  */
@@ -36,25 +65,22 @@ add_shortcode('ppc_portal_layout', function ($atts) {
     ];
 
     ob_start(); ?>
-    <div class="ppc-app" style="display:grid;grid-template-columns:260px 1fr;gap:18px;max-width:1200px;margin:0 auto;">
-        <aside style="border:1px solid #ddd;border-radius:14px;padding:14px;background:#fff;height:fit-content;position:sticky;top:20px;">
-            <div style="font-weight:800;font-size:16px;margin-bottom:10px;">Property Portal</div>
-            <nav style="display:flex;flex-direction:column;gap:8px;">
+    <div class="ppc-app">
+        <aside class="ppc-sidebar">
+            <div class="ppc-sidebar__title">Property Portal</div>
+            <nav class="ppc-nav">
                 <?php foreach ($links as $label => $url): ?>
-                    <a href="<?php echo esc_url($url); ?>"
-                       style="text-decoration:none;border:1px solid #cfcfcf;border-radius:10px;padding:10px 12px;color:#111;background:#fff;">
-                        <?php echo esc_html($label); ?>
-                    </a>
+                    <a class="ppc-btn" href="<?php echo esc_url($url); ?>"><?php echo esc_html($label); ?></a>
                 <?php endforeach; ?>
 
-                <a href="<?php echo esc_url(wp_logout_url(home_url('/staff-login/'))); ?>"
-                   style="text-decoration:none;margin-top:10px;color:#b42318;font-weight:700;">
+                <a class="ppc-btn ppc-btn--danger"
+                    href="<?php echo esc_url(wp_logout_url(home_url('/staff-login/'))); ?>">
                     Log out
                 </a>
             </nav>
         </aside>
 
-        <main style="min-width:0;">
+        <main class="ppc-main">
             <?php
             switch ($content) {
                 case 'add_property':  echo do_shortcode('[ppc_property_form mode="create"]'); break;
@@ -187,45 +213,36 @@ add_shortcode('ppc_pm_dashboard', function () {
 
     ob_start(); ?>
 
-    <div style="display:flex;flex-direction:column;gap:16px;">
-        <header style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+    <div class="ppc-stack">
+        <header class="ppc-header">
             <div>
-                <h1 style="margin:0 0 6px 0;">Dashboard</h1>
-                <div style="color:#555;">Quick view of repairs and voids.</div>
+                <h1 class="ppc-h1">Dashboard</h1>
+                <div class="ppc-muted">Quick view of repairs and voids.</div>
             </div>
 
-            <div style="display:flex;gap:10px;flex-wrap:wrap;">
-                <a href="<?php echo esc_url(ppc_portal_url('add-repair')); ?>"
-                   style="text-decoration:none;border:1px solid #cfcfcf;border-radius:10px;padding:10px 12px;color:#111;background:#fff;font-weight:700;">
-                    + Add Repair
-                </a>
-                <a href="<?php echo esc_url(ppc_portal_url('add-property')); ?>"
-                   style="text-decoration:none;border:1px solid #cfcfcf;border-radius:10px;padding:10px 12px;color:#111;background:#fff;font-weight:700;">
-                    + Add Property
-                </a>
-                <a href="<?php echo esc_url(ppc_portal_url('add-void')); ?>"
-                   style="text-decoration:none;border:1px solid #cfcfcf;border-radius:10px;padding:10px 12px;color:#111;background:#fff;font-weight:700;">
-                    + Start Void
-                </a>
+            <div class="ppc-actions">
+                <?php echo ppc_btn('+ Add Repair', ppc_portal_url('add-repair')); ?>
+                <?php echo ppc_btn('+ Add Property', ppc_portal_url('add-property')); ?>
+                <?php echo ppc_btn('+ Start Void', ppc_portal_url('add-void')); ?>
             </div>
         </header>
 
-        <section style="border:1px solid #ddd;border-radius:14px;padding:14px;background:#fff;">
-            <h2 style="margin:0 0 10px 0;font-size:16px;">My Open Repairs</h2>
+        <section class="ppc-card">
+            <h2 class="ppc-h2">My Open Repairs</h2>
 
             <?php if (empty($my_repairs)): ?>
-                <p style="margin:0;color:#555;">No open repairs assigned to you.</p>
+                <p>No open repairs assigned to you.</p>
             <?php else: ?>
-                <div style="overflow:auto;">
-                    <table style="width:100%;border-collapse:collapse;min-width:720px;">
+                <div class="ppc-table-wrap">
+                    <table class="ppc-table--min720">
                         <thead>
                         <tr>
-                            <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Property</th>
-                            <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Summary</th>
-                            <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Priority</th>
-                            <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Status</th>
-                            <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Target</th>
-                            <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Action</th>
+                            <th class="ppc-th">Property</th>
+                            <th class="ppc-th">Summary</th>
+                            <th class="ppc-th">Priority</th>
+                            <th class="ppc-th">Status</th>
+                            <th class="ppc-th">Target</th>
+                            <th class="ppc-th">Action</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -237,13 +254,13 @@ add_shortcode('ppc_pm_dashboard', function () {
                             $due        = get_field('repair_due_date', $r->ID);
                             ?>
                             <tr>
-                                <td style="padding:10px;border-bottom:1px solid #f2f2f2;"><?php echo esc_html($prop_title ?: '—'); ?></td>
-                                <td style="padding:10px;border-bottom:1px solid #f2f2f2;"><?php echo esc_html(get_field('repair_summary', $r->ID) ?: $r->post_title); ?></td>
-                                <td style="padding:10px;border-bottom:1px solid #f2f2f2;"><?php echo esc_html($priority ?: '—'); ?></td>
-                                <td style="padding:10px;border-bottom:1px solid #f2f2f2;"><?php echo esc_html($status ?: '—'); ?></td>
-                                <td style="padding:10px;border-bottom:1px solid #f2f2f2;"><?php echo esc_html($fmt_date($due) ?: '—'); ?></td>
-                                <td style="padding:10px;border-bottom:1px solid #f2f2f2;">
-                                    <a href="<?php echo esc_url(ppc_edit_url('repair', (int)$r->ID)); ?>" style="font-weight:700;">View / Edit</a>
+                                <td class="ppc-td"><?php echo esc_html($prop_title ?: '—'); ?></td>
+                                <td class="ppc-td"><?php echo esc_html(get_field('repair_summary', $r->ID) ?: $r->post_title); ?></td>
+                                <td class="ppc-td"><?php echo esc_html($priority ?: '—'); ?></td>
+                                <td class="ppc-td"><?php echo esc_html($status ?: '—'); ?></td>
+                                <td class="ppc-td"><?php echo esc_html($fmt_date($due) ?: '—'); ?></td>
+                                <td class="ppc-td">
+                                    <a class="ppc-link" href="<?php echo esc_url(ppc_edit_url('repair', (int)$r->ID)); ?>">View / Edit</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -253,23 +270,23 @@ add_shortcode('ppc_pm_dashboard', function () {
             <?php endif; ?>
         </section>
 
-        <section style="border:1px solid #ddd;border-radius:14px;padding:14px;background:#fff;">
-            <h2 style="margin:0 0 10px 0;font-size:16px;">All Open Repairs</h2>
+        <section class="ppc-card">
+            <h2 class="ppc-h2">All Open Repairs</h2>
 
             <?php if (empty($open_repairs)): ?>
-                <p style="margin:0;color:#555;">No open repairs found.</p>
+                <p>No open repairs found.</p>
             <?php else: ?>
-                <div style="overflow:auto;">
-                    <table style="width:100%;border-collapse:collapse;min-width:820px;">
+                <div class="ppc-table-wrap">
+                    <table class="ppc-table--min820">
                         <thead>
                         <tr>
-                            <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Property</th>
-                            <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Summary</th>
-                            <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Owner</th>
-                            <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Priority</th>
-                            <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Status</th>
-                            <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Target</th>
-                            <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Action</th>
+                            <th class="ppc-th">Property</th>
+                            <th class="ppc-th">Summary</th>
+                            <th class="ppc-th">Owner</th>
+                            <th class="ppc-th">Priority</th>
+                            <th class="ppc-th">Status</th>
+                            <th class="ppc-th">Target</th>
+                            <th class="ppc-th">Action</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -282,14 +299,14 @@ add_shortcode('ppc_pm_dashboard', function () {
                             $due        = get_field('repair_due_date', $r->ID);
                             ?>
                             <tr>
-                                <td style="padding:10px;border-bottom:1px solid #f2f2f2;"><?php echo esc_html($prop_title ?: '—'); ?></td>
-                                <td style="padding:10px;border-bottom:1px solid #f2f2f2;"><?php echo esc_html(get_field('repair_summary', $r->ID) ?: $r->post_title); ?></td>
-                                <td style="padding:10px;border-bottom:1px solid #f2f2f2;"><?php echo esc_html($owner_name ?: 'Unassigned'); ?></td>
-                                <td style="padding:10px;border-bottom:1px solid #f2f2f2;"><?php echo esc_html($priority ?: '—'); ?></td>
-                                <td style="padding:10px;border-bottom:1px solid #f2f2f2;"><?php echo esc_html($status ?: '—'); ?></td>
-                                <td style="padding:10px;border-bottom:1px solid #f2f2f2;"><?php echo esc_html($fmt_date($due) ?: '—'); ?></td>
-                                <td style="padding:10px;border-bottom:1px solid #f2f2f2;">
-                                    <a href="<?php echo esc_url(ppc_edit_url('repair', (int)$r->ID)); ?>" style="font-weight:700;">View / Edit</a>
+                                <td class="ppc-td"><?php echo esc_html($prop_title ?: '—'); ?></td>
+                                <td class="ppc-td"><?php echo esc_html(get_field('repair_summary', $r->ID) ?: $r->post_title); ?></td>
+                                <td class="ppc-td"><?php echo esc_html($owner_name ?: 'Unassigned'); ?></td>
+                                <td class="ppc-td"><?php echo esc_html($priority ?: '—'); ?></td>
+                                <td class="ppc-td"><?php echo esc_html($status ?: '—'); ?></td>
+                                <td class="ppc-td"><?php echo esc_html($fmt_date($due) ?: '—'); ?></td>
+                                <td class="ppc-td">
+                                    <a class="ppc-link" href="<?php echo esc_url(ppc_edit_url('repair', (int)$r->ID)); ?>">View / Edit</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -299,21 +316,21 @@ add_shortcode('ppc_pm_dashboard', function () {
             <?php endif; ?>
         </section>
 
-        <section style="border:1px solid #ddd;border-radius:14px;padding:14px;background:#fff;">
-            <h2 style="margin:0 0 10px 0;font-size:16px;">Active Voids</h2>
+        <section class="ppc-card">
+            <h2 class="ppc-h2">Active Voids</h2>
 
             <?php if (empty($active_voids)): ?>
-                <p style="margin:0;color:#555;">No active voids found.</p>
+                <p>No active voids found.</p>
             <?php else: ?>
-                <div style="overflow:auto;">
-                    <table style="width:100%;border-collapse:collapse;min-width:720px;">
+                <div class="ppc-table-wrap">
+                    <table class="ppc-table--min720">
                         <thead>
                         <tr>
-                            <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Property</th>
-                            <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Stage</th>
-                            <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Start</th>
-                            <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Target</th>
-                            <th style="text-align:left;padding:10px;border-bottom:1px solid #eee;">Action</th>
+                            <th class="ppc-th">Property</th>
+                            <th class="ppc-th">Stage</th>
+                            <th class="ppc-th">Start</th>
+                            <th class="ppc-th">Target</th>
+                            <th class="ppc-th">Action</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -329,12 +346,12 @@ add_shortcode('ppc_pm_dashboard', function () {
                             $target = get_field('void_target_date', $v->ID);
                             ?>
                             <tr>
-                                <td style="padding:10px;border-bottom:1px solid #f2f2f2;"><?php echo esc_html($prop_title ?: '—'); ?></td>
-                                <td style="padding:10px;border-bottom:1px solid #f2f2f2;"><?php echo esc_html($stage ?: '—'); ?></td>
-                                <td style="padding:10px;border-bottom:1px solid #f2f2f2;"><?php echo esc_html($fmt_date($start) ?: '—'); ?></td>
-                                <td style="padding:10px;border-bottom:1px solid #f2f2f2;"><?php echo esc_html($fmt_date($target) ?: '—'); ?></td>
-                                <td style="padding:10px;border-bottom:1px solid #f2f2f2;">
-                                    <a href="<?php echo esc_url(ppc_edit_url('void', (int)$v->ID)); ?>" style="font-weight:700;">View / Edit</a>
+                                <td class="ppc-td"><?php echo esc_html($prop_title ?: '—'); ?></td>
+                                <td class="ppc-td"><?php echo esc_html($stage ?: '—'); ?></td>
+                                <td class="ppc-td"><?php echo esc_html($fmt_date($start) ?: '—'); ?></td>
+                                <td class="ppc-td"><?php echo esc_html($fmt_date($target) ?: '—'); ?></td>
+                                <td class="ppc-td">
+                                    <a class="ppc-link" href="<?php echo esc_url(ppc_edit_url('void', (int)$v->ID)); ?>">View / Edit</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -367,7 +384,7 @@ add_shortcode('ppc_property_form', function ($atts) {
     }
 
     ob_start();
-    echo '<h1 style="margin-top:0;">' . esc_html($mode === 'edit' ? 'Edit Property' : 'Add Property') . '</h1>';
+    echo '<h1 class="ppc-h1">' . esc_html($mode === 'edit' ? 'Edit Property' : 'Add Property') . '</h1>';
 
     acf_form([
         'post_id' => $post_id,
@@ -401,7 +418,7 @@ add_shortcode('ppc_repair_form', function ($atts) {
     }
 
     ob_start();
-    echo '<h1 style="margin-top:0;">' . esc_html($mode === 'edit' ? 'Edit Repair' : 'Add Repair') . '</h1>';
+    echo '<h1 class="ppc-h1">' . esc_html($mode === 'edit' ? 'Edit Repair' : 'Add Repair') . '</h1>';
 
     acf_form([
         'post_id' => $post_id,
@@ -440,7 +457,7 @@ add_shortcode('ppc_void_form', function ($atts) {
     }
 
     ob_start();
-    echo '<h1 style="margin-top:0;">' . esc_html($mode === 'edit' ? 'Edit Void' : 'Start Void') . '</h1>';
+    echo '<h1 class="ppc-h1">' . esc_html($mode === 'edit' ? 'Edit Void' : 'Start Void') . '</h1>';
 
     acf_form([
         'post_id' => $post_id,

@@ -8,8 +8,10 @@ require_once __DIR__ . '/core/helpers.php';
 require_once __DIR__ . '/core/auth.php';
 require_once __DIR__ . '/core/cpt.php';
 require_once __DIR__ . '/core/roles.php';
+require_once __DIR__ . '/core/scope.php';
 require_once __DIR__ . '/core/validation.php';
-require_once __DIR__ . '/core/acf-queries.php';
+require_once __DIR__ . '/public/components.php';
+//require_once __DIR__ . '/core/acf-queries.php';
 
 // Public (front-end) functionality
 require_once __DIR__ . '/public/shortcodes.php';

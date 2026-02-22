@@ -1,0 +1,218 @@
+/* =========================================================
+   Portal Base
+   Scoped entirely inside .ppc-app
+   ========================================================= */
+.ppc-app {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #1a1a1a;
+}
+
+/* Consistent vertical rhythm */
+.ppc-app p {
+  color: #666;
+  margin: 0 0 12px 0;
+}
+
+.ppc-app ul,
+.ppc-app ol {
+  margin: 0 0 12px 20px;
+  padding: 0;
+}
+
+.ppc-app a {
+  color: #1a1a1a;
+  text-decoration: none;
+}
+
+.ppc-app a:hover {
+  text-decoration: underline;
+}
+
+.ppc-sidebar {
+  border: 1px solid #ddd;
+  border-radius: 14px;
+  padding: 14px;
+  background: #fff;
+  height: fit-content;
+  position: sticky;
+  top: 20px;
+}
+
+.ppc-sidebar__title {
+  font-weight: 800;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.ppc-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Portal page container spacing */
+.ppc-main {
+  padding-bottom: 40px;
+}
+
+/* Muted text utility */
+.ppc-muted {
+  color: #666;
+  font-size: 13px;
+}
+
+/* Buttons / links */
+.ppc-btn {
+  display: inline-block;
+  text-decoration: none;
+  border: 1px solid #cfcfcf;
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: #111;
+  background: #fff;
+  font-weight: 700;
+}
+
+.ppc-btn--danger {
+  border: none;
+  padding: 0;
+  background: transparent;
+  color: #b42318;
+  font-weight: 700;
+}
+
+.ppc-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Cards / sections */
+.ppc-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ppc-card {
+  border: 1px solid #ddd;
+  border-radius: 14px;
+  padding: 14px;
+  background: #fff;
+}
+
+.ppc-card__title {
+  margin: 0 0 10px 0;
+  font-size: 16px;
+}
+
+.ppc-muted {
+  color: #555;
+}
+
+.ppc-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* =========================================================
+   Portal Headings
+   ========================================================= */
+
+.ppc-h1 {
+  margin: 0 0 12px 0;
+  font-size: 24px;
+  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.ppc-h2 {
+  margin: 0 0 10px 0;
+  font-size: 18px;
+  line-height: 1.25;
+  font-weight: 800;
+}
+
+.ppc-h3 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  line-height: 1.3;
+  font-weight: 700;
+}
+
+.ppc-h4 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  line-height: 1.35;
+  font-weight: 700;
+}
+
+.ppc-h5 {
+  margin: 0 0 6px 0;
+  font-size: 13px;
+  line-height: 1.4;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.ppc-h6 {
+  margin: 0 0 6px 0;
+  font-size: 12px;
+  line-height: 1.4;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #666;
+}
+
+/* Tables */
+.ppc-table-wrap {
+  overflow: auto;
+}
+
+.ppc-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.ppc-table--min720 {
+  min-width: 720px;
+}
+.ppc-table--min820 {
+  min-width: 820px;
+}
+
+.ppc-th {
+  text-align: left;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.ppc-td {
+  padding: 10px;
+  border-bottom: 1px solid #f2f2f2;
+}
+
+.ppc-link {
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* Mobile */
+@media (max-width: 980px) {
+  .ppc-app {
+    grid-template-columns: 1fr;
+  }
+  .ppc-sidebar {
+    position: static;
+  }
+}
