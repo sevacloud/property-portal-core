@@ -2,21 +2,23 @@
    Portal Base
    Scoped entirely inside .ppc-app
    ========================================================= */
+
 .ppc-app {
   font-family:
     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
     sans-serif;
   font-size: 14px;
   line-height: 1.5;
-  color: var(--ppc-color-primary);
+  color: var(--ppc-color-text);
+  background: var(--ppc-color-bg);
 }
 
-/* Consistent vertical rhythm */
 .ppc-app p {
-  color: #000;
+  color: var(--ppc-color-text);
   margin: 0 0 12px 0;
 }
 
+/* Consistent vertical rhythm */
 .ppc-app ul,
 .ppc-app ol {
   margin: 0 0 12px 20px;
@@ -32,11 +34,16 @@
   text-decoration: underline;
 }
 
+/* =========================================================
+   Sidebar
+   ========================================================= */
+
 .ppc-sidebar {
-  border: 1px solid #ddd;
-  border-radius: 14px;
+  border: 1px solid var(--ppc-color-border);
+  border-radius: var(--ppc-radius);
   padding: 14px;
-  background: #fff;
+  background: var(--ppc-color-bg);
+  box-shadow: var(--ppc-shadow-sm);
   height: fit-content;
   position: sticky;
   top: 20px;
@@ -46,6 +53,7 @@
   font-weight: 800;
   font-size: 16px;
   margin-bottom: 10px;
+  color: var(--ppc-color-h3);
 }
 
 .ppc-nav {
@@ -61,20 +69,27 @@
 
 /* Muted text utility */
 .ppc-muted {
-  color: #666;
+  color: var(--ppc-color-text-muted);
   font-size: 13px;
 }
 
-/* Buttons / links */
+/* =========================================================
+   Buttons / Links
+   ========================================================= */
+
 .ppc-btn {
   display: inline-block;
   text-decoration: none;
-  border: 1px solid #cfcfcf;
+  border: 1px solid var(--ppc-color-border-strong);
   border-radius: 10px;
   padding: 10px 12px;
   color: var(--ppc-color-text);
-  background: #fff;
+  background: var(--ppc-color-bg);
   font-weight: 700;
+}
+
+.ppc-btn:hover {
+  background: var(--ppc-color-bg-subtle);
 }
 
 .ppc-btn--danger {
@@ -91,7 +106,10 @@
   flex-wrap: wrap;
 }
 
-/* Cards / sections */
+/* =========================================================
+   Cards / Sections
+   ========================================================= */
+
 .ppc-stack {
   display: flex;
   flex-direction: column;
@@ -99,19 +117,17 @@
 }
 
 .ppc-card {
-  border: 1px solid #ddd;
-  border-radius: 14px;
+  border: 1px solid var(--ppc-color-border);
+  border-radius: var(--ppc-radius);
   padding: 14px;
-  background: #fff;
+  background: var(--ppc-color-bg);
+  box-shadow: var(--ppc-shadow-sm);
 }
 
 .ppc-card__title {
   margin: 0 0 10px 0;
   font-size: 16px;
-}
-
-.ppc-muted {
-  color: var(--ppc-color-text-muted);
+  color: var(--ppc-color-h3);
 }
 
 .ppc-header {
@@ -179,7 +195,10 @@
   color: var(--ppc-color-h6);
 }
 
-/* Tables */
+/* =========================================================
+   Tables
+   ========================================================= */
+
 .ppc-table-wrap {
   overflow: auto;
 }
@@ -192,6 +211,7 @@
 .ppc-table--min720 {
   min-width: 720px;
 }
+
 .ppc-table--min820 {
   min-width: 820px;
 }
@@ -199,20 +219,26 @@
 .ppc-th {
   text-align: left;
   padding: 10px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--ppc-color-border);
+  color: var(--ppc-color-text);
 }
 
 .ppc-td {
   padding: 10px;
-  border-bottom: 1px solid #f2f2f2;
+  border-bottom: 1px solid var(--ppc-color-border);
+  color: var(--ppc-color-text);
 }
 
 .ppc-link {
   font-weight: 700;
   text-decoration: none;
+  color: var(--ppc-color-text-link);
 }
 
-/* Mobile */
+/* =========================================================
+   Mobile
+   ========================================================= */
+
 @media (max-width: 980px) {
   .ppc-app {
     grid-template-columns: 1fr;
