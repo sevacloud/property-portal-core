@@ -21,28 +21,21 @@ function ppc_edit_url(string $type, int $id): string {
  * (So it doesn’t affect the rest of the site)
  */
 add_action('wp_enqueue_scripts', function () {
-    // Only load for staff (optional but nice)
     if (!is_user_logged_in() || !function_exists('ppc_is_staff_user') || !ppc_is_staff_user()) return;
 
-    // Only load on portal pages (dashboard + form pages)
     $slugs = [
         'property-management',
-        'add-property',
-        'edit-property',
-        'add-repair',
-        'edit-repair',
-        'add-void',
-        'edit-void',
+        'add-property', 'edit-property',
+        'add-repair', 'edit-repair',
+        'add-void', 'edit-void',
     ];
-
     if (!is_page($slugs)) return;
 
-    wp_enqueue_style(
-        'ppc-portal',
-        PPC_URL . 'assets/css/ppc-portal.css',
-        [],
-        '0.1.0'
-    );
+    $rel_path = 'assets/css/ppc-portal.css';
+    $file_path = PPC_PATH . $rel_path;
+    $ver = file_exists($file_path) ? (string) filemtime($file_path) : '0.1.0';
+
+    wp_enqueue_style('ppc-portal', PPC_URL . $rel_path, [], $ver);
 });
 
 /**
@@ -67,7 +60,7 @@ add_shortcode('ppc_portal_layout', function ($atts) {
     ob_start(); ?>
     <div class="ppc-app">
         <aside class="ppc-sidebar">
-            <div class="ppc-sidebar__title">Property Portal</div>
+            <h2 class="ppc-sidebar__title ppc-h2">Property Portal</h2>
             <nav class="ppc-nav">
                 <?php foreach ($links as $label => $url): ?>
                     <a class="ppc-btn" href="<?php echo esc_url($url); ?>"><?php echo esc_html($label); ?></a>
