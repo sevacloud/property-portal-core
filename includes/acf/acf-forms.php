@@ -15,6 +15,9 @@ add_action('wp', function () {
     if (!is_user_logged_in() || !function_exists('ppc_is_staff_user') || !ppc_is_staff_user()) return;
 
     $slugs = [
+        'properties',
+        'repairs',
+        'voids',
         'add-property',
         'edit-property',
         'add-repair',

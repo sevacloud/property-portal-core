@@ -25,6 +25,7 @@ add_action('wp_enqueue_scripts', function () {
 
     $slugs = [
         'property-management',
+        'properties', 'repairs', 'voids',
         'add-property', 'edit-property',
         'add-repair', 'edit-repair',
         'add-void', 'edit-void',
@@ -51,10 +52,10 @@ add_shortcode('ppc_portal_layout', function ($atts) {
     $content = (string) $atts['content'];
 
     $links = [
-        'Dashboard'    => ppc_portal_url(''),
-        'Add Repair'   => ppc_portal_url('add-repair'),
-        'Add Property' => ppc_portal_url('add-property'),
-        'Add Void'     => ppc_portal_url('add-void'),
+        'Dashboard'  => ppc_portal_url(''),
+        'Properties' => ppc_portal_url('properties'),
+        'Repairs'    => ppc_portal_url('repairs'),
+        'Voids'      => ppc_portal_url('voids'),
     ];
 
     ob_start(); ?>
@@ -76,13 +77,18 @@ add_shortcode('ppc_portal_layout', function ($atts) {
         <main class="ppc-main">
             <?php
             switch ($content) {
+                case 'properties':    echo do_shortcode('[ppc_properties_overview]');         break;
+                case 'repairs':       echo do_shortcode('[ppc_repairs_overview]');            break;
+                case 'voids':         echo do_shortcode('[ppc_voids_overview]');              break;
+
                 case 'add_property':  echo do_shortcode('[ppc_property_form mode="create"]'); break;
                 case 'edit_property': echo do_shortcode('[ppc_property_form mode="edit"]');   break;
                 case 'add_repair':    echo do_shortcode('[ppc_repair_form mode="create"]');   break;
                 case 'edit_repair':   echo do_shortcode('[ppc_repair_form mode="edit"]');     break;
                 case 'add_void':      echo do_shortcode('[ppc_void_form mode="create"]');     break;
                 case 'edit_void':     echo do_shortcode('[ppc_void_form mode="edit"]');       break;
-                default:              echo do_shortcode('[ppc_pm_dashboard]');                break;
+
+                default: echo do_shortcode('[ppc_pm_dashboard]'); break;
             }
             ?>
         </main>
@@ -343,6 +349,227 @@ add_shortcode('ppc_pm_dashboard', function () {
                                 <td class="ppc-td"><?php echo esc_html($stage ?: '—'); ?></td>
                                 <td class="ppc-td"><?php echo esc_html($fmt_date($start) ?: '—'); ?></td>
                                 <td class="ppc-td"><?php echo esc_html($fmt_date($target) ?: '—'); ?></td>
+                                <td class="ppc-td">
+                                    <a class="ppc-link" href="<?php echo esc_url(ppc_edit_url('void', (int)$v->ID)); ?>">View / Edit</a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
+        </section>
+    </div>
+
+    <?php
+    return ob_get_clean();
+});
+
+/**
+ * PROPERTIES overview page
+ * Usage: [ppc_properties_overview]
+ */
+add_shortcode('ppc_properties_overview', function () {
+    if (!is_user_logged_in() || !function_exists('ppc_is_staff_user') || !ppc_is_staff_user()) {
+        return '<p>Access denied.</p>';
+    }
+
+    $properties = get_posts([
+        'post_type'      => 'ppm_property',
+        'post_status'    => 'publish',
+        'posts_per_page' => 50,
+        'orderby'        => 'title',
+        'order'          => 'ASC',
+    ]);
+
+    ob_start(); ?>
+
+    <div class="ppc-stack">
+        <header class="ppc-header">
+            <div>
+                <h1 class="ppc-h1">Properties</h1>
+                <div class="ppc-muted">View and manage all properties.</div>
+            </div>
+
+            <div class="ppc-actions">
+                <?php echo ppc_btn('+ Add Property', ppc_portal_url('add-property')); ?>
+            </div>
+        </header>
+
+        <section class="ppc-card">
+            <?php if (empty($properties)): ?>
+                <p>No properties found.</p>
+            <?php else: ?>
+                <div class="ppc-table-wrap">
+                    <table class="ppc-table ppc-table--min720">
+                        <thead>
+                        <tr>
+                            <th class="ppc-th">Property</th>
+                            <th class="ppc-th">Created</th>
+                            <th class="ppc-th">Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach ($properties as $p): ?>
+                            <tr>
+                                <td class="ppc-td"><?php echo esc_html($p->post_title ?: '—'); ?></td>
+                                <td class="ppc-td"><?php echo esc_html(date('d M Y', strtotime($p->post_date))); ?></td>
+                                <td class="ppc-td">
+                                    <a class="ppc-link" href="<?php echo esc_url(ppc_edit_url('property', (int)$p->ID)); ?>">View / Edit</a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
+        </section>
+    </div>
+
+    <?php
+    return ob_get_clean();
+});
+
+/**
+ * REPAIRS overview page
+ * Usage: [ppc_repairs_overview]
+ */
+add_shortcode('ppc_repairs_overview', function () {
+    if (!is_user_logged_in() || !function_exists('ppc_is_staff_user') || !ppc_is_staff_user()) {
+        return '<p>Access denied.</p>';
+    }
+
+    $repairs = get_posts([
+        'post_type'      => 'ppm_repair',
+        'post_status'    => 'publish',
+        'posts_per_page' => 50,
+        'orderby'        => 'date',
+        'order'          => 'DESC',
+    ]);
+
+    ob_start(); ?>
+
+    <div class="ppc-stack">
+        <header class="ppc-header">
+            <div>
+                <h1 class="ppc-h1">Repairs</h1>
+                <div class="ppc-muted">View and manage repairs across all properties.</div>
+            </div>
+
+            <div class="ppc-actions">
+                <?php echo ppc_btn('+ Add Repair', ppc_portal_url('add-repair')); ?>
+            </div>
+        </header>
+
+        <section class="ppc-card">
+            <?php if (empty($repairs)): ?>
+                <p>No repairs found.</p>
+            <?php else: ?>
+                <div class="ppc-table-wrap">
+                    <table class="ppc-table ppc-table--min820">
+                        <thead>
+                        <tr>
+                            <th class="ppc-th">Property</th>
+                            <th class="ppc-th">Summary</th>
+                            <th class="ppc-th">Owner</th>
+                            <th class="ppc-th">Priority</th>
+                            <th class="ppc-th">Status</th>
+                            <th class="ppc-th">Target</th>
+                            <th class="ppc-th">Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach ($repairs as $r): ?>
+                            <?php
+                            $prop_title = ppc_get_property_title_from_field('repair_property', (int)$r->ID);
+                            $owner_name = ppc_get_owner_name_from_field('repair_owner', (int)$r->ID);
+                            $priority   = function_exists('get_field') ? (string) get_field('repair_priority', $r->ID) : '';
+                            $status     = function_exists('get_field') ? (string) get_field('repair_status', $r->ID) : '';
+                            $due        = function_exists('get_field') ? get_field('repair_due_date', $r->ID) : '';
+                            $summary    = function_exists('get_field') ? (string) get_field('repair_summary', $r->ID) : '';
+                            ?>
+                            <tr>
+                                <td class="ppc-td"><?php echo esc_html($prop_title ?: '—'); ?></td>
+                                <td class="ppc-td"><?php echo esc_html($summary ?: ($r->post_title ?: '—')); ?></td>
+                                <td class="ppc-td"><?php echo esc_html($owner_name ?: 'Unassigned'); ?></td>
+                                <td class="ppc-td"><?php echo esc_html($priority ?: '—'); ?></td>
+                                <td class="ppc-td"><?php echo esc_html($status ?: '—'); ?></td>
+                                <td class="ppc-td"><?php echo esc_html(ppc_fmt_date($due) ?: '—'); ?></td>
+                                <td class="ppc-td">
+                                    <a class="ppc-link" href="<?php echo esc_url(ppc_edit_url('repair', (int)$r->ID)); ?>">View / Edit</a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
+        </section>
+    </div>
+
+    <?php
+    return ob_get_clean();
+});
+
+/**
+ * VOIDS overview page
+ * Usage: [ppc_voids_overview]
+ */
+add_shortcode('ppc_voids_overview', function () {
+    if (!is_user_logged_in() || !function_exists('ppc_is_staff_user') || !ppc_is_staff_user()) {
+        return '<p>Access denied.</p>';
+    }
+
+    $voids = get_posts([
+        'post_type'      => 'ppm_void',
+        'post_status'    => 'publish',
+        'posts_per_page' => 50,
+        'orderby'        => 'date',
+        'order'          => 'DESC',
+    ]);
+
+    ob_start(); ?>
+
+    <div class="ppc-stack">
+        <header class="ppc-header">
+            <div>
+                <h1 class="ppc-h1">Voids</h1>
+                <div class="ppc-muted">Track active and completed void periods.</div>
+            </div>
+
+            <div class="ppc-actions">
+                <?php echo ppc_btn('+ Start Void', ppc_portal_url('add-void')); ?>
+            </div>
+        </header>
+
+        <section class="ppc-card">
+            <?php if (empty($voids)): ?>
+                <p>No voids found.</p>
+            <?php else: ?>
+                <div class="ppc-table-wrap">
+                    <table class="ppc-table ppc-table--min720">
+                        <thead>
+                        <tr>
+                            <th class="ppc-th">Property</th>
+                            <th class="ppc-th">Stage</th>
+                            <th class="ppc-th">Start</th>
+                            <th class="ppc-th">Target</th>
+                            <th class="ppc-th">Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach ($voids as $v): ?>
+                            <?php
+                            $prop_title = ppc_get_property_title_from_field('void_property', (int)$v->ID);
+                            $stage      = function_exists('get_field') ? (string) get_field('void_stage', $v->ID) : '';
+                            $start      = function_exists('get_field') ? get_field('void_start_date', $v->ID) : '';
+                            $target     = function_exists('get_field') ? get_field('void_target_date', $v->ID) : '';
+                            ?>
+                            <tr>
+                                <td class="ppc-td"><?php echo esc_html($prop_title ?: '—'); ?></td>
+                                <td class="ppc-td"><?php echo esc_html($stage ?: '—'); ?></td>
+                                <td class="ppc-td"><?php echo esc_html(ppc_fmt_date($start) ?: '—'); ?></td>
+                                <td class="ppc-td"><?php echo esc_html(ppc_fmt_date($target) ?: '—'); ?></td>
                                 <td class="ppc-td">
                                     <a class="ppc-link" href="<?php echo esc_url(ppc_edit_url('void', (int)$v->ID)); ?>">View / Edit</a>
                                 </td>

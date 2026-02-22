@@ -99,3 +99,33 @@ add_action('acf/save_post', function ($post_id) {
     $running = false;
 
 }, 20);
+
+/**
+ * Shared helpers (safe to define once).
+ */
+function ppc_fmt_date($ymd): string {
+    if (!$ymd) return '';
+    $ts = strtotime((string) $ymd);
+    if (!$ts) return '';
+    return date('d M Y', $ts);
+}
+
+function ppc_get_property_title_from_field(string $field_name, int $post_id): string {
+    $prop = function_exists('get_field') ? get_field($field_name, $post_id) : null;
+    if (is_object($prop) && !empty($prop->post_title)) return (string) $prop->post_title;
+    if (is_numeric($prop) && (int)$prop > 0) return get_the_title((int)$prop) ?: '';
+    return '';
+}
+
+function ppc_get_owner_name_from_field(string $field_name, int $post_id): string {
+    $owner = function_exists('get_field') ? get_field($field_name, $post_id) : null;
+
+    if (is_array($owner) && !empty($owner['display_name'])) return (string) $owner['display_name'];
+    if (is_object($owner) && !empty($owner->display_name)) return (string) $owner->display_name;
+
+    if (is_numeric($owner) && (int)$owner > 0) {
+        $u = get_user_by('id', (int)$owner);
+        return $u ? (string) $u->display_name : '';
+    }
+    return '';
+}
