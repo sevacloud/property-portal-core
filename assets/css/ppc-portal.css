@@ -45,14 +45,12 @@
    ========================================================= */
 
 .ppc-sidebar {
-  border: 1px solid var(--ppc-color-border);
-  border-radius: var(--ppc-radius);
-  padding: 14px;
+  border-right: 3px solid var(--ppc-color-border-light);
+  padding: 16px;
   background: var(--ppc-color-bg);
   box-shadow: var(--ppc-shadow-sm);
-  height: fit-content;
+  height: 100%;
   position: sticky;
-  top: 20px;
 
   /* Make sure the grid items behave */
   width: 100%;
@@ -267,6 +265,7 @@
   --ppc-color-primary: #049c3d;
   --ppc-color-primary-accent: #722d75;
   --ppc-color-primary-light: #ac62a7;
+  --ppc-color-primary-lightest: #f5e9fc;
 
   /* Headings */
   --ppc-color-h1: #1a1a1a;
@@ -288,6 +287,7 @@
 
   /* Borders */
   --ppc-color-border: #ac62a7;
+  --ppc-color-border-light: #f5e9fc;
   --ppc-color-border-strong: #722d75;
 
   /* States */
