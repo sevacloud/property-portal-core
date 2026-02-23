@@ -957,6 +957,7 @@ add_shortcode('ppc_tenant_form', function ($atts) {
                 $property_id = function_exists('get_field') ? (int) get_field('tenancy_property', (int)$x->ID) : 0;
                 $start       = function_exists('get_field') ? get_field('tenancy_start', (int)$x->ID) : '';
                 $end         = function_exists('get_field') ? get_field('tenancy_end', (int)$x->ID) : '';
+                $is_current  = empty($end);
 
                 $property_title = $property_id ? (get_the_title($property_id) ?: '') : '';
 
@@ -967,7 +968,15 @@ add_shortcode('ppc_tenant_form', function ($atts) {
                     ) . '</td>';
                 echo '<td class="ppc-td">' . esc_html($fmt_date($start) ?: '—') . '</td>';
                 echo '<td class="ppc-td">' . esc_html($end ? $fmt_date($end) : 'Current') . '</td>';
-                echo '<td class="ppc-td"><a class="ppc-link" href="' . esc_url(ppc_edit_url('tenancy', (int)$x->ID)) . '">View / Edit</a></td>';
+                echo '<td class="ppc-td">';
+                echo '<a class="ppc-link" href="' . esc_url(ppc_edit_url('tenancy', (int)$x->ID)) . '">View / Edit</a>';
+
+                if ($is_current) {
+                    $end_url = ppc_end_tenancy_url((int)$x->ID, wp_get_referer() ?: ppc_portal_url('tenants'));
+                    echo ' &nbsp; <a class="ppc-btn ppc-btn--danger" href="' . esc_url($end_url) . '">End</a>';
+                }
+
+                echo '</td>';
                 echo '</tr>';
             }
 
@@ -1032,10 +1041,18 @@ add_shortcode('ppc_tenancy_form', function ($atts) {
         $current_tenancy_id = ppc_get_current_tenancy_id_for_property($prefill_property_id);
 
         if ($current_tenancy_id > 0) {
+
+            // Remove filters BEFORE returning early
+            if ($filter_tenant) remove_filter('acf/prepare_field/name=tenancy_tenant', $filter_tenant, 20);
+            if ($filter_property) remove_filter('acf/prepare_field/name=tenancy_property', $filter_property, 20);
+
             $property_title = get_the_title($prefill_property_id) ?: 'this property';
 
             $view_url = ppc_edit_url('tenancy', $current_tenancy_id);
-            $end_url  = ppc_end_tenancy_url($current_tenancy_id, ppc_portal_url('add-tenancy') . '?property_id=' . $prefill_property_id);
+            $end_url  = ppc_end_tenancy_url(
+                $current_tenancy_id,
+                ppc_portal_url('add-tenancy') . '?property_id=' . $prefill_property_id
+            );
 
             ob_start(); ?>
             <div class="ppc-stack">

@@ -422,7 +422,7 @@ add_action('acf/init', function () {
                 'instructions' => 'Upload supporting document (ID, agreement, etc).',
             ],
         ],
-        ]);
+    ]);
 
     /**
      * TENANCY FIELDS (ACF Free)

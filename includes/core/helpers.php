@@ -261,3 +261,47 @@ add_action('admin_post_ppc_end_tenancy', function () {
     wp_safe_redirect($redirect_to);
     exit;
 });
+
+/**
+ * Enforce “one current tenancy per property” on save
+ */
+add_action('acf/validate_save_post', function () {
+    if (!is_user_logged_in() || !function_exists('ppc_is_staff_user') || !ppc_is_staff_user()) return;
+
+    // Only validate tenancy form submissions
+    $post_id = $_POST['_acf_post_id'] ?? ($_POST['post_id'] ?? null);
+    // When creating via acf_form new_post, this is usually "new_post"
+    // So we validate based on acf_form_data instead:
+    $form_data = $_POST['_acf_form'] ?? null;
+
+    // If you want a simple/robust check: validate when tenancy fields are present in POST
+    if (empty($_POST['acf']) || !is_array($_POST['acf'])) return;
+
+    // Find posted property field value by field name (works if ACF includes field names)
+    // Safer: look up by field key if you know it. If not, use acf_get_field() to map.
+    $acf = $_POST['acf'];
+
+    // Attempt to locate the posted property value by searching fields in group
+    $property_field_key = 'field_ppc_tenancy_property';
+    $end_field_key      = 'field_ppc_tenancy_end';
+
+    if (!isset($acf[$property_field_key])) return;
+
+    $property_id = (int) $acf[$property_field_key];
+    if ($property_id <= 0) return;
+
+    // If end date is being set, it's not a "current" tenancy, so allow it
+    $end_val = $acf[$end_field_key] ?? '';
+    $is_current_submission = empty($end_val);
+
+    if (!$is_current_submission) return;
+
+    $current_tenancy_id = ppc_get_current_tenancy_id_for_property($property_id);
+    if ($current_tenancy_id <= 0) return;
+
+    // If editing the same tenancy, allow
+    if (!empty($_POST['post_ID']) && (int)$_POST['post_ID'] === $current_tenancy_id) return;
+
+    $property_title = get_the_title($property_id) ?: 'this property';
+    acf_add_validation_error('', $property_title . ' already has a current tenancy. End the current tenancy first.');
+}, 20);
