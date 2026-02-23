@@ -238,7 +238,7 @@ add_shortcode('ppc_pm_dashboard', function () {
                         <?php foreach ($all_properties as $p): ?>
                             <tr>
                                 <td class="ppc-td">
-                                    <a class="ppc-link" href="<?php echo esc_url(ppc_edit_url('property', (int)$p->ID)); ?>">
+                                    <a class="ppc-link" href="<?php echo esc_url(ppc_property_page_url((int)$p->ID)); ?>">
                                         <?php echo esc_html($p->post_title ?: '—'); ?>
                                     </a>
                                 </td>
@@ -246,7 +246,7 @@ add_shortcode('ppc_pm_dashboard', function () {
                                     <?php echo esc_html(date('d M Y', strtotime($p->post_date))); ?>
                                 </td>
                                 <td class="ppc-td">
-                                    <?php echo ppc_btn('Edit', ppc_edit_url('property', (int)$p->ID)); ?>
+                                    <?php echo ppc_btn('View', ppc_property_page_url((int)$p->ID)); ?>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -353,6 +353,7 @@ add_shortcode('ppc_pm_dashboard', function () {
     <?php
     return ob_get_clean();
 });
+
 /**
  * REPAIRS overview page
  * Usage: [ppc_repairs_overview]

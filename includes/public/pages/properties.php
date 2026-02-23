@@ -1,12 +1,6 @@
 <?php
 if (!defined('ABSPATH')) exit;
 
-if (!function_exists('ppc_property_page_url')) {
-    function ppc_property_page_url(int $id): string {
-        return add_query_arg(['id' => $id], ppc_portal_url('property'));
-    }
-}
-
 /**
  * PROPERTIES overview page
  * Usage: [ppc_properties_overview]
