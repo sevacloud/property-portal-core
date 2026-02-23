@@ -7,11 +7,14 @@ if (!defined('ABSPATH')) exit;
 function ppc_portal_url(string $path): string {
     return home_url('/property-management/' . ltrim($path, '/') . '/');
 }
+
 function ppc_edit_url(string $type, int $id): string {
     switch ($type) {
         case 'property': return add_query_arg(['id' => $id], ppc_portal_url('edit-property'));
         case 'repair':   return add_query_arg(['id' => $id], ppc_portal_url('edit-repair'));
         case 'void':     return add_query_arg(['id' => $id], ppc_portal_url('edit-void'));
+        case 'tenant':   return add_query_arg(['id' => $id], ppc_portal_url('edit-tenant'));
+        case 'tenancy':  return add_query_arg(['id' => $id], ppc_portal_url('edit-tenancy'));
         default:         return ppc_portal_url('');
     }
 }
@@ -25,10 +28,12 @@ add_action('wp_enqueue_scripts', function () {
 
     $slugs = [
         'property-management',
-        'properties', 'repairs', 'voids',
+        'properties', 'repairs', 'voids', 'tenants', 'tenancies',
         'add-property', 'edit-property',
         'add-repair', 'edit-repair',
         'add-void', 'edit-void',
+        'add-tenant', 'edit-tenant',
+        'add-tenancy', 'edit-tenancy',
     ];
     if (!is_page($slugs)) return;
 
@@ -56,6 +61,8 @@ add_shortcode('ppc_portal_layout', function ($atts) {
         'Properties' => ppc_portal_url('properties'),
         'Repairs'    => ppc_portal_url('repairs'),
         'Voids'      => ppc_portal_url('voids'),
+        'Tenants'    => ppc_portal_url('tenants'),
+        'Tenancies'  => ppc_portal_url('tenancies'),
     ];
 
     ob_start(); ?>
@@ -80,6 +87,8 @@ add_shortcode('ppc_portal_layout', function ($atts) {
                 case 'properties':    echo do_shortcode('[ppc_properties_overview]');         break;
                 case 'repairs':       echo do_shortcode('[ppc_repairs_overview]');            break;
                 case 'voids':         echo do_shortcode('[ppc_voids_overview]');              break;
+                case 'tenants':       echo do_shortcode('[ppc_tenants_overview]');            break;
+                case 'tenancies':     echo do_shortcode('[ppc_tenancies_overview]');          break;
 
                 case 'add_property':  echo do_shortcode('[ppc_property_form mode="create"]'); break;
                 case 'edit_property': echo do_shortcode('[ppc_property_form mode="edit"]');   break;
@@ -88,7 +97,12 @@ add_shortcode('ppc_portal_layout', function ($atts) {
                 case 'add_void':      echo do_shortcode('[ppc_void_form mode="create"]');     break;
                 case 'edit_void':     echo do_shortcode('[ppc_void_form mode="edit"]');       break;
 
-                default: echo do_shortcode('[ppc_pm_dashboard]'); break;
+                case 'add_tenant':    echo do_shortcode('[ppc_tenant_form mode="create"]');   break;
+                case 'edit_tenant':   echo do_shortcode('[ppc_tenant_form mode="edit"]');     break;
+                case 'add_tenancy':   echo do_shortcode('[ppc_tenancy_form mode="create"]');  break;
+                case 'edit_tenancy':  echo do_shortcode('[ppc_tenancy_form mode="edit"]');    break;
+
+                default:              echo do_shortcode('[ppc_pm_dashboard]');                break;
             }
             ?>
         </main>
@@ -579,6 +593,172 @@ add_shortcode('ppc_voids_overview', function () {
 });
 
 /**
+ * TENANTS overview page
+ * Usage: [ppc_tenants_overview]
+ */
+add_shortcode('ppc_tenants_overview', function () {
+    if (!is_user_logged_in() || !function_exists('ppc_is_staff_user') || !ppc_is_staff_user()) {
+        return '<p>Access denied.</p>';
+    }
+
+    $tenants = get_posts([
+        'post_type'      => 'ppm_tenant',
+        'post_status'    => 'publish',
+        'posts_per_page' => 50,
+        'orderby'        => 'title',
+        'order'          => 'ASC',
+    ]);
+
+    ob_start(); ?>
+    <div class="ppc-stack">
+        <header class="ppc-header">
+            <div>
+                <h1 class="ppc-h1">Tenants</h1>
+                <div class="ppc-muted">View and manage tenants.</div>
+            </div>
+            <div class="ppc-actions">
+                <?php echo ppc_btn('+ Add Tenant', ppc_portal_url('add-tenant')); ?>
+            </div>
+        </header>
+
+        <section class="ppc-card">
+            <?php if (empty($tenants)): ?>
+                <p>No tenants found.</p>
+            <?php else: ?>
+                <div class="ppc-table-wrap">
+                    <table class="ppc-table ppc-table--min720">
+                        <thead>
+                        <tr>
+                            <th class="ppc-th">Tenant</th>
+                            <th class="ppc-th">Phone</th>
+                            <th class="ppc-th">Email</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach ($tenants as $t): ?>
+                            <?php
+                            $phone = function_exists('get_field') ? (string) get_field('tenant_phone', (int)$t->ID) : '';
+                            $email = function_exists('get_field') ? (string) get_field('tenant_email', (int)$t->ID) : '';
+                            ?>
+                            <tr>
+                                <td class="ppc-td">
+                                    <a class="ppc-link" href="<?php echo esc_url(ppc_edit_url('tenant', (int)$t->ID)); ?>">
+                                        <?php echo esc_html($t->post_title ?: '—'); ?>
+                                    </a>
+                                </td>
+                                <td class="ppc-td"><?php echo esc_html($phone ?: '—'); ?></td>
+                                <td class="ppc-td"><?php echo esc_html($email ?: '—'); ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
+        </section>
+    </div>
+    <?php
+    return ob_get_clean();
+});
+
+/**
+ * TENANCY overview page
+ * Usage: [ppc_tenancies_overview]
+ */
+add_shortcode('ppc_tenancies_overview', function () {
+    if (!is_user_logged_in() || !function_exists('ppc_is_staff_user') || !ppc_is_staff_user()) {
+        return '<p>Access denied.</p>';
+    }
+
+    $tenancies = get_posts([
+        'post_type'      => 'ppm_tenancy',
+        'post_status'    => 'publish',
+        'posts_per_page' => 50,
+        'orderby'        => 'date',
+        'order'          => 'DESC',
+    ]);
+
+    $fmt_date = function ($ymd): string {
+        if (!$ymd) return '';
+        $ts = strtotime((string)$ymd);
+        if (!$ts) return '';
+        return date('d M Y', $ts);
+    };
+
+    ob_start(); ?>
+    <div class="ppc-stack">
+        <header class="ppc-header">
+            <div>
+                <h1 class="ppc-h1">Tenancies</h1>
+                <div class="ppc-muted">Track tenant-to-property assignments over time.</div>
+            </div>
+            <div class="ppc-actions">
+                <?php echo ppc_btn('+ Start Tenancy', ppc_portal_url('add-tenancy')); ?>
+            </div>
+        </header>
+
+        <section class="ppc-card">
+            <?php if (empty($tenancies)): ?>
+                <p>No tenancies found.</p>
+            <?php else: ?>
+                <div class="ppc-table-wrap">
+                    <table class="ppc-table ppc-table--min820">
+                        <thead>
+                        <tr>
+                            <th class="ppc-th">Property</th>
+                            <th class="ppc-th">Tenant</th>
+                            <th class="ppc-th">Start</th>
+                            <th class="ppc-th">End</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <?php foreach ($tenancies as $x): ?>
+                            <?php
+                            $property_id = function_exists('get_field') ? (int) get_field('tenancy_property', (int)$x->ID) : 0;
+                            $tenant_id   = function_exists('get_field') ? (int) get_field('tenancy_tenant', (int)$x->ID) : 0;
+                            $start       = function_exists('get_field') ? get_field('tenancy_start', (int)$x->ID) : '';
+                            $end         = function_exists('get_field') ? get_field('tenancy_end', (int)$x->ID) : '';
+
+                            $property_title = $property_id ? (get_the_title($property_id) ?: '') : '';
+                            $tenant_title   = $tenant_id ? (get_the_title($tenant_id) ?: '') : '';
+                            ?>
+                            <tr>
+                                <td class="ppc-td">
+                                    <?php if ($property_id): ?>
+                                        <a class="ppc-link" href="<?php echo esc_url(ppc_edit_url('property', $property_id)); ?>">
+                                            <?php echo esc_html($property_title ?: '—'); ?>
+                                        </a>
+                                    <?php else: ?>
+                                        —
+                                    <?php endif; ?>
+                                </td>
+                                <td class="ppc-td">
+                                    <?php if ($tenant_id): ?>
+                                        <a class="ppc-link" href="<?php echo esc_url(ppc_edit_url('tenant', $tenant_id)); ?>">
+                                            <?php echo esc_html($tenant_title ?: '—'); ?>
+                                        </a>
+                                    <?php else: ?>
+                                        —
+                                    <?php endif; ?>
+                                </td>
+                                <td class="ppc-td"><?php echo esc_html($fmt_date($start) ?: '—'); ?></td>
+                                <td class="ppc-td">
+                                    <a class="ppc-link" href="<?php echo esc_url(ppc_edit_url('tenancy', (int)$x->ID)); ?>">
+                                        <?php echo esc_html($end ? $fmt_date($end) : 'Current'); ?>
+                                    </a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php endif; ?>
+        </section>
+    </div>
+    <?php
+    return ob_get_clean();
+});
+
+/**
  * PROPERTY create/edit form.
  */
 add_shortcode('ppc_property_form', function ($atts) {
@@ -680,6 +860,79 @@ add_shortcode('ppc_void_form', function ($atts) {
         'field_groups' => ['group_ppc_void_fields'],
         'submit_value' => $mode === 'edit' ? 'Save Void' : 'Create Void',
         'return'       => ppc_portal_url(''),
+    ]);
+
+    return ob_get_clean();
+});
+
+/**
+ * TENANT create/edit form.
+ */
+add_shortcode('ppc_tenant_form', function ($atts) {
+    if (!function_exists('acf_form')) return '<p>ACF is required.</p>';
+    if (!is_user_logged_in() || !function_exists('ppc_is_staff_user') || !ppc_is_staff_user()) return '<p>Access denied.</p>';
+
+    $atts = shortcode_atts(['mode' => 'create'], $atts);
+    $mode = (string) $atts['mode'];
+
+    $post_id = 'new_post';
+    if ($mode === 'edit') {
+        $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+        if (!$id || get_post_type($id) !== 'ppm_tenant') return '<p>Invalid tenant.</p>';
+        $post_id = $id;
+    }
+
+    ob_start();
+    echo '<h1 class="ppc-h1">' . esc_html($mode === 'edit' ? 'Edit Tenant' : 'Add Tenant') . '</h1>';
+
+    acf_form([
+        'post_id' => $post_id,
+        'new_post' => [
+            'post_type'   => 'ppm_tenant',
+            'post_status' => 'publish',
+        ],
+        'field_groups' => ['group_ppc_tenant_fields'],
+        'submit_value' => $mode === 'edit' ? 'Save Tenant' : 'Create Tenant',
+        'return'       => ppc_portal_url('tenants'),
+    ]);
+
+    return ob_get_clean();
+});
+
+/**
+ * TENANCY create/edit form.
+ */
+add_shortcode('ppc_tenancy_form', function ($atts) {
+    if (!function_exists('acf_form')) return '<p>ACF is required.</p>';
+    if (!is_user_logged_in() || !function_exists('ppc_is_staff_user') || !ppc_is_staff_user()) return '<p>Access denied.</p>';
+
+    // Optional guard if you haven't created tenancy fields yet
+    if (!function_exists('acf_get_field_group') || !acf_get_field_group('group_ppc_tenancy_fields')) {
+        return '<p>Tenancy fields are not registered yet. Next step: add group_ppc_tenancy_fields in your plugin.</p>';
+    }
+
+    $atts = shortcode_atts(['mode' => 'create'], $atts);
+    $mode = (string) $atts['mode'];
+
+    $post_id = 'new_post';
+    if ($mode === 'edit') {
+        $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+        if (!$id || get_post_type($id) !== 'ppm_tenancy') return '<p>Invalid tenancy.</p>';
+        $post_id = $id;
+    }
+
+    ob_start();
+    echo '<h1 class="ppc-h1">' . esc_html($mode === 'edit' ? 'Edit Tenancy' : 'Start Tenancy') . '</h1>';
+
+    acf_form([
+        'post_id' => $post_id,
+        'new_post' => [
+            'post_type'   => 'ppm_tenancy',
+            'post_status' => 'publish',
+        ],
+        'field_groups' => ['group_ppc_tenancy_fields'],
+        'submit_value' => $mode === 'edit' ? 'Save Tenancy' : 'Create Tenancy',
+        'return'       => ppc_portal_url('tenancies'),
     ]);
 
     return ob_get_clean();
