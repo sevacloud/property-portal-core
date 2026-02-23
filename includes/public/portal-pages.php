@@ -28,7 +28,7 @@ add_action('wp_enqueue_scripts', function () {
 
     $slugs = [
         'property-management',
-        'properties', 'repairs', 'voids', 'tenants', 'tenancies',
+        'properties', 'property', 'repairs', 'voids', 'tenants', 'tenancies',
         'add-property', 'edit-property',
         'add-repair', 'edit-repair',
         'add-void', 'edit-void',
@@ -85,6 +85,7 @@ add_shortcode('ppc_portal_layout', function ($atts) {
             <?php
             switch ($content) {
                 case 'properties':    echo do_shortcode('[ppc_properties_overview]');         break;
+                case 'property':      echo do_shortcode('[ppc_property]');                    break;
                 case 'repairs':       echo do_shortcode('[ppc_repairs_overview]');            break;
                 case 'voids':         echo do_shortcode('[ppc_voids_overview]');              break;
                 case 'tenants':       echo do_shortcode('[ppc_tenants_overview]');            break;
@@ -352,68 +353,6 @@ add_shortcode('ppc_pm_dashboard', function () {
     <?php
     return ob_get_clean();
 });
-
-/**
- * PROPERTIES overview page
- * Usage: [ppc_properties_overview]
- */
-add_shortcode('ppc_properties_overview', function () {
-    if (!is_user_logged_in() || !function_exists('ppc_is_staff_user') || !ppc_is_staff_user()) {
-        return '<p>Access denied.</p>';
-    }
-
-    $properties = get_posts([
-        'post_type'      => 'ppm_property',
-        'post_status'    => 'publish',
-        'posts_per_page' => 50,
-        'orderby'        => 'title',
-        'order'          => 'ASC',
-    ]);
-
-    ob_start(); ?>
-
-    <div class="ppc-stack">
-        <header class="ppc-header">
-            <div>
-                <h1 class="ppc-h1">Properties</h1>
-                <div class="ppc-muted">View and manage all properties.</div>
-            </div>
-
-            <div class="ppc-actions">
-                <?php echo ppc_btn('+ Add Property', ppc_portal_url('add-property')); ?>
-            </div>
-        </header>
-
-        <section class="ppc-card">
-            <?php if (empty($properties)): ?>
-                <p>No properties found.</p>
-            <?php else: ?>
-                <div class="ppc-table-wrap">
-                    <table class="ppc-table ppc-table--min720">
-                        <thead>
-                        <tr>
-                            <th class="ppc-th">Property</th>
-                            <th class="ppc-th">Created</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <?php foreach ($properties as $p): ?>
-                            <tr>
-                                <td class="ppc-td"><?php echo esc_html($p->post_title ?: '—'); ?></td>
-                                <td class="ppc-td"><?php echo esc_html(date('d M Y', strtotime($p->post_date))); ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-            <?php endif; ?>
-        </section>
-    </div>
-
-    <?php
-    return ob_get_clean();
-});
-
 /**
  * REPAIRS overview page
  * Usage: [ppc_repairs_overview]
