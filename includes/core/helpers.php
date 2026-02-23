@@ -144,7 +144,7 @@ add_action('acf/save_post', function ($post_id) {
  * Shared helpers (safe to define once).
  */
 function ppc_property_page_url(int $id): string {
-    return add_query_arg(['id' => $id], ppc_portal_url('property'));
+    return add_query_arg(['id' => $id], rtrim(ppc_portal_url('property'), '/'));
 }
 
 function ppc_fmt_date($ymd): string {
