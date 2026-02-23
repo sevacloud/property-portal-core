@@ -71,8 +71,8 @@
 
 /* Portal page container spacing */
 .ppc-main {
+  padding: 16px;
   min-width: 0; /* prevents table/content overflow from breaking layout */
-  padding-bottom: 40px;
 }
 
 /* Muted text utility */
@@ -273,7 +273,7 @@
   --ppc-color-primary-lightest: #f5e9fc;
 
   /* Headings */
-  --ppc-color-h1: #1a1a1a;
+  --ppc-color-h1: #049c3d;
   --ppc-color-h2: #049c3d;
   --ppc-color-h3: #722d75;
   --ppc-color-h4: #1a1a1a;
