@@ -42,7 +42,8 @@ add_action('init', function () {
     if ($staff) {
         // Basic read access to the CPTs (admin UI testing phase)
         $caps = [
-            'edit_posts', 'upload_files'
+            //'edit_posts', 'upload_files',
+
             // Property
             //'edit_others_ppm_properties', (REMOVE IN PROD)
             'read_ppm_property', 'read_private_ppm_properties',

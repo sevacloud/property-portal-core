@@ -99,12 +99,12 @@ add_action('acf/save_post', function ($post_id) {
         $name   = get_field('tenant_name', $post_id);
         $tenant_phone = get_field('tenant_phone', $post_id);
 
-        if ($name && !empty($name->post_title)) {
+        if ($name) {
 
             if ($tenant_phone) {
-                $title = "{$name->post_title} – {$tenant_phone}";
+                $title = "{$name} – {$tenant_phone}";
             } else {
-                $title = "{$name->post_title}";
+                $title = "{$name}";
             }
         }
     }
