@@ -876,15 +876,37 @@ add_shortcode('ppc_tenant_form', function ($atts) {
     $mode = (string) $atts['mode'];
 
     $post_id = 'new_post';
+    $tenant_id = 0;
+
     if ($mode === 'edit') {
         $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
         if (!$id || get_post_type($id) !== 'ppm_tenant') return '<p>Invalid tenant.</p>';
         $post_id = $id;
+        $tenant_id = $id;
     }
 
-    ob_start();
-    echo '<h1 class="ppc-h1">' . esc_html($mode === 'edit' ? 'Edit Tenant' : 'Add Tenant') . '</h1>';
+    // Helper: date formatting
+    $fmt_date = function ($ymd): string {
+        if (!$ymd) return '';
+        $ts = strtotime((string)$ymd);
+        if (!$ts) return '';
+        return date('d M Y', $ts);
+    };
 
+    ob_start();
+
+    echo '<div class="ppc-stack">';
+    echo '<header class="ppc-header">';
+    echo '<div><h1 class="ppc-h1">' . esc_html($mode === 'edit' ? 'Edit Tenant' : 'Add Tenant') . '</h1></div>';
+
+    // Show "Start Tenancy" action only when we have a real tenant ID
+    if ($mode === 'edit' && $tenant_id > 0) {
+        $add_tenancy_url = add_query_arg(['tenant_id' => $tenant_id], ppc_portal_url('add-tenancy'));
+        echo '<div class="ppc-actions">' . ppc_btn('+ Start Tenancy', $add_tenancy_url) . '</div>';
+    }
+    echo '</header>';
+
+    // Tenant form
     acf_form([
         'post_id' => $post_id,
         'new_post' => [
@@ -896,6 +918,67 @@ add_shortcode('ppc_tenant_form', function ($atts) {
         'return'       => ppc_portal_url('tenants'),
     ]);
 
+    // Tenancy history (edit mode only)
+    if ($mode === 'edit' && $tenant_id > 0) {
+
+        $tenancies = get_posts([
+            'post_type'      => 'ppm_tenancy',
+            'post_status'    => 'publish',
+            'posts_per_page' => 50,
+            'orderby'        => 'date',
+            'order'          => 'DESC',
+            'meta_query'     => [
+                [
+                    'key'     => 'tenancy_tenant',
+                    'value'   => (string) $tenant_id,
+                    'compare' => '=',
+                ],
+            ],
+        ]);
+
+        echo '<section class="ppc-card">';
+        echo '<div class="ppc-header">';
+        echo '<h2 class="ppc-h2">Tenancy History</h2>';
+        echo '</div>';
+
+        if (empty($tenancies)) {
+            echo '<p>No tenancies found for this tenant.</p>';
+        } else {
+            echo '<div class="ppc-table-wrap">';
+            echo '<table class="ppc-table ppc-table--min820">';
+            echo '<thead><tr>';
+            echo '<th class="ppc-th">Property</th>';
+            echo '<th class="ppc-th">Start</th>';
+            echo '<th class="ppc-th">End</th>';
+            echo '<th class="ppc-th">Record</th>';
+            echo '</tr></thead><tbody>';
+
+            foreach ($tenancies as $x) {
+                $property_id = function_exists('get_field') ? (int) get_field('tenancy_property', (int)$x->ID) : 0;
+                $start       = function_exists('get_field') ? get_field('tenancy_start', (int)$x->ID) : '';
+                $end         = function_exists('get_field') ? get_field('tenancy_end', (int)$x->ID) : '';
+
+                $property_title = $property_id ? (get_the_title($property_id) ?: '') : '';
+
+                echo '<tr>';
+                echo '<td class="ppc-td">' . ($property_id
+                        ? '<a class="ppc-link" href="' . esc_url(ppc_edit_url('property', $property_id)) . '">' . esc_html($property_title ?: '—') . '</a>'
+                        : '—'
+                    ) . '</td>';
+                echo '<td class="ppc-td">' . esc_html($fmt_date($start) ?: '—') . '</td>';
+                echo '<td class="ppc-td">' . esc_html($end ? $fmt_date($end) : 'Current') . '</td>';
+                echo '<td class="ppc-td"><a class="ppc-link" href="' . esc_url(ppc_edit_url('tenancy', (int)$x->ID)) . '">View / Edit</a></td>';
+                echo '</tr>';
+            }
+
+            echo '</tbody></table></div>';
+        }
+
+        echo '</section>';
+    }
+
+    echo '</div>'; // .ppc-stack
+
     return ob_get_clean();
 });
 
@@ -906,7 +989,6 @@ add_shortcode('ppc_tenancy_form', function ($atts) {
     if (!function_exists('acf_form')) return '<p>ACF is required.</p>';
     if (!is_user_logged_in() || !function_exists('ppc_is_staff_user') || !ppc_is_staff_user()) return '<p>Access denied.</p>';
 
-    // Optional guard if you haven't created tenancy fields yet
     if (!function_exists('acf_get_field_group') || !acf_get_field_group('group_ppc_tenancy_fields')) {
         return '<p>Tenancy fields are not registered yet. Next step: add group_ppc_tenancy_fields in your plugin.</p>';
     }
@@ -921,7 +1003,32 @@ add_shortcode('ppc_tenancy_form', function ($atts) {
         $post_id = $id;
     }
 
+    // Prefill tenant/property when creating a new tenancy
+    $prefill_tenant_id   = ($mode === 'create' && isset($_GET['tenant_id']))   ? (int) $_GET['tenant_id'] : 0;
+    $prefill_property_id = ($mode === 'create' && isset($_GET['property_id'])) ? (int) $_GET['property_id'] : 0;
+
+    // ACF: prefill field values for new_post
+    $filter_tenant = null;
+    $filter_property = null;
+
+    if ($prefill_tenant_id > 0) {
+        $filter_tenant = function ($field) use ($prefill_tenant_id) {
+            if (empty($field['value'])) $field['value'] = $prefill_tenant_id;
+            return $field;
+        };
+        add_filter('acf/prepare_field/name=tenancy_tenant', $filter_tenant, 20);
+    }
+
+    if ($prefill_property_id > 0) {
+        $filter_property = function ($field) use ($prefill_property_id) {
+            if (empty($field['value'])) $field['value'] = $prefill_property_id;
+            return $field;
+        };
+        add_filter('acf/prepare_field/name=tenancy_property', $filter_property, 20);
+    }
+
     ob_start();
+
     echo '<h1 class="ppc-h1">' . esc_html($mode === 'edit' ? 'Edit Tenancy' : 'Start Tenancy') . '</h1>';
 
     acf_form([
@@ -935,5 +1042,11 @@ add_shortcode('ppc_tenancy_form', function ($atts) {
         'return'       => ppc_portal_url('tenancies'),
     ]);
 
-    return ob_get_clean();
+    $html = ob_get_clean();
+
+    // Remove filters after rendering (avoid affecting other forms)
+    if ($filter_tenant) remove_filter('acf/prepare_field/name=tenancy_tenant', $filter_tenant, 20);
+    if ($filter_property) remove_filter('acf/prepare_field/name=tenancy_property', $filter_property, 20);
+
+    return $html;
 });
