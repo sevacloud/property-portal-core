@@ -169,3 +169,95 @@ function ppc_get_owner_name_from_field(string $field_name, int $post_id): string
     }
     return '';
 }
+
+/**
+ * Find the current (active) tenancy for a property.
+ * "Current" means tenancy_end is empty / not set.
+ */
+function ppc_get_current_tenancy_id_for_property(int $property_id): int {
+    if ($property_id <= 0) return 0;
+
+    $tenancies = get_posts([
+        'post_type'      => 'ppm_tenancy',
+        'post_status'    => 'publish',
+        'posts_per_page' => 1,
+        'orderby'        => 'meta_value',
+        'meta_key'       => 'tenancy_start',
+        'order'          => 'DESC',
+        'meta_query'     => [
+            'relation' => 'AND',
+            [
+                'key'     => 'tenancy_property',
+                'value'   => (string) $property_id,
+                'compare' => '=',
+            ],
+            [
+                'relation' => 'OR',
+                [
+                    'key'     => 'tenancy_end',
+                    'compare' => 'NOT EXISTS',
+                ],
+                [
+                    'key'     => 'tenancy_end',
+                    'value'   => '',
+                    'compare' => '=',
+                ],
+            ],
+        ],
+    ]);
+
+    return !empty($tenancies) ? (int) $tenancies[0]->ID : 0;
+}
+
+/**
+ * Build a secure "End tenancy" URL.
+ */
+function ppc_end_tenancy_url(int $tenancy_id, string $redirect_to = ''): string {
+    $redirect_to = $redirect_to ?: wp_get_referer();
+    $url = add_query_arg([
+        'action'     => 'ppc_end_tenancy',
+        'tenancy_id' => $tenancy_id,
+        'redirect_to'=> rawurlencode($redirect_to ?: home_url('/')),
+    ], admin_url('admin-post.php'));
+
+    return wp_nonce_url($url, 'ppc_end_tenancy_' . $tenancy_id);
+}
+
+/**
+ * One-click End Tenancy handler (sets tenancy_end = today).
+ */
+add_action('admin_post_ppc_end_tenancy', function () {
+    if (!is_user_logged_in() || !function_exists('ppc_is_staff_user') || !ppc_is_staff_user()) {
+        wp_die('Access denied.');
+    }
+
+    $tenancy_id = isset($_GET['tenancy_id']) ? (int) $_GET['tenancy_id'] : 0;
+    if (!$tenancy_id || get_post_type($tenancy_id) !== 'ppm_tenancy') {
+        wp_die('Invalid tenancy.');
+    }
+
+    if (!wp_verify_nonce($_GET['_wpnonce'] ?? '', 'ppc_end_tenancy_' . $tenancy_id)) {
+        wp_die('Invalid end tenancy request.');
+    }
+
+    $end = function_exists('get_field') ? get_field('tenancy_end', $tenancy_id) : get_post_meta($tenancy_id, 'tenancy_end', true);
+
+    // If already ended, just redirect
+    if ($end) {
+        $redirect_to = isset($_GET['redirect_to']) ? rawurldecode((string)$_GET['redirect_to']) : (wp_get_referer() ?: home_url('/'));
+        wp_safe_redirect($redirect_to);
+        exit;
+    }
+
+    $today = current_time('Y-m-d'); // uses WP site timezone
+
+    if (function_exists('update_field')) {
+        update_field('tenancy_end', $today, $tenancy_id);
+    } else {
+        update_post_meta($tenancy_id, 'tenancy_end', $today);
+    }
+
+    $redirect_to = isset($_GET['redirect_to']) ? rawurldecode((string)$_GET['redirect_to']) : (wp_get_referer() ?: home_url('/'));
+    wp_safe_redirect($redirect_to);
+    exit;
+});

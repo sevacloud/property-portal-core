@@ -1027,6 +1027,42 @@ add_shortcode('ppc_tenancy_form', function ($atts) {
         add_filter('acf/prepare_field/name=tenancy_property', $filter_property, 20);
     }
 
+    // Prevent starting a new tenancy if the property already has a current tenancy
+    if ($mode === 'create' && $prefill_property_id > 0) {
+        $current_tenancy_id = ppc_get_current_tenancy_id_for_property($prefill_property_id);
+
+        if ($current_tenancy_id > 0) {
+            $property_title = get_the_title($prefill_property_id) ?: 'this property';
+
+            $view_url = ppc_edit_url('tenancy', $current_tenancy_id);
+            $end_url  = ppc_end_tenancy_url($current_tenancy_id, ppc_portal_url('add-tenancy') . '?property_id=' . $prefill_property_id);
+
+            ob_start(); ?>
+            <div class="ppc-stack">
+                <header class="ppc-header">
+                    <div>
+                        <h1 class="ppc-h1">Start Tenancy</h1>
+                        <div class="ppc-muted">This property already has an active tenancy.</div>
+                    </div>
+                </header>
+
+                <section class="ppc-card">
+                    <p>
+                        <strong><?php echo esc_html($property_title); ?></strong> already has a <strong>Current</strong> tenancy.
+                        End it first, or view/edit it.
+                    </p>
+
+                    <div class="ppc-actions">
+                        <?php echo ppc_btn('View Current Tenancy', $view_url); ?>
+                        <a class="ppc-btn ppc-btn--danger" href="<?php echo esc_url($end_url); ?>">End Current Tenancy</a>
+                    </div>
+                </section>
+            </div>
+            <?php
+            return ob_get_clean();
+        }
+    }
+
     ob_start();
 
     echo '<h1 class="ppc-h1">' . esc_html($mode === 'edit' ? 'Edit Tenancy' : 'Start Tenancy') . '</h1>';
