@@ -68,7 +68,7 @@ add_shortcode('ppc_portal_layout', function ($atts) {
     ob_start(); ?>
     <div class="ppc-app">
         <aside class="ppc-sidebar">
-            <h2 class="ppc-sidebar__title ppc-h2">Property Portal</h2>
+            <h2 class="ppc-sidebar__title ppc-h2">Menu</h2>
             <nav class="ppc-nav">
                 <?php foreach ($links as $label => $url): ?>
                     <a class="ppc-btn" href="<?php echo esc_url($url); ?>"><?php echo esc_html($label); ?></a>
@@ -153,33 +153,13 @@ add_shortcode('ppc_pm_dashboard', function () {
         return date('d M Y', $ts);
     };
 
-    // Query: My Open Repairs
-    $my_repairs = get_posts([
-        'post_type'      => 'ppm_repair',
+    // Query: All Properties
+    $all_properties = get_posts([
+        'post_type'      => 'ppm_property',
         'post_status'    => 'publish',
-        'posts_per_page' => 10,
-        'orderby'        => 'date',
-        'order'          => 'DESC',
-        'meta_query'     => [
-            'relation' => 'AND',
-            [
-                'key'     => 'repair_owner',
-                'value'   => (string) $user_id,
-                'compare' => '=',
-            ],
-            [
-                'relation' => 'OR',
-                [
-                    'key'     => 'repair_status',
-                    'compare' => 'NOT EXISTS',
-                ],
-                [
-                    'key'     => 'repair_status',
-                    'value'   => $closed_statuses,
-                    'compare' => 'NOT IN',
-                ],
-            ],
-        ],
+        'posts_per_page' => 50,
+        'orderby'        => 'title',
+        'order'          => 'ASC',
     ]);
 
     // Query: All Open Repairs
@@ -229,7 +209,7 @@ add_shortcode('ppc_pm_dashboard', function () {
     <div class="ppc-stack">
         <header class="ppc-header">
             <div>
-                <h1 class="ppc-h1">Dashboard</h1>
+                <h2 class="ppc-h1">Dashboard</h2>
                 <div class="ppc-muted">Quick view of repairs and voids.</div>
             </div>
 
@@ -241,41 +221,34 @@ add_shortcode('ppc_pm_dashboard', function () {
         </header>
 
         <section class="ppc-card">
-            <h2 class="ppc-h2">My Open Repairs</h2>
+            <h2 class="ppc-h2">All Properties</h2>
 
-            <?php if (empty($my_repairs)): ?>
-                <p>No open repairs assigned to you.</p>
+            <?php if (empty($all_properties)): ?>
+                <p>No properties found.</p>
             <?php else: ?>
                 <div class="ppc-table-wrap">
-                    <table class="ppc-table--min720">
+                    <table class="ppc-table ppc-table--min720">
                         <thead>
                         <tr>
                             <th class="ppc-th">Property</th>
-                            <th class="ppc-th">Summary</th>
-                            <th class="ppc-th">Priority</th>
-                            <th class="ppc-th">Status</th>
-                            <th class="ppc-th">Target</th>
+                            <th class="ppc-th">Created</th>
+                            <th class="ppc-th">Action</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <?php foreach ($my_repairs as $r): ?>
-                            <?php
-                            $prop_title = $get_property_title($r->ID);
-                            $priority   = (string) get_field('repair_priority', $r->ID);
-                            $status     = (string) get_field('repair_status', $r->ID);
-                            $due        = get_field('repair_due_date', $r->ID);
-                            ?>
+                        <?php foreach ($all_properties as $p): ?>
                             <tr>
                                 <td class="ppc-td">
-                                    <a class="ppc-link"
-                                    href="<?php echo esc_url(ppc_edit_url('repair', (int)$r->ID)); ?>">
-                                        <?php echo esc_html(get_field('repair_summary', $r->ID) ?: $r->post_title); ?>
+                                    <a class="ppc-link" href="<?php echo esc_url(ppc_edit_url('property', (int)$p->ID)); ?>">
+                                        <?php echo esc_html($p->post_title ?: '—'); ?>
                                     </a>
                                 </td>
-                                <td class="ppc-td"><?php echo esc_html($prop_title ?: '—'); ?></td>
-                                <td class="ppc-td"><?php echo esc_html($priority ?: '—'); ?></td>
-                                <td class="ppc-td"><?php echo esc_html($status ?: '—'); ?></td>
-                                <td class="ppc-td"><?php echo esc_html($fmt_date($due) ?: '—'); ?></td>
+                                <td class="ppc-td">
+                                    <?php echo esc_html(date('d M Y', strtotime($p->post_date))); ?>
+                                </td>
+                                <td class="ppc-td">
+                                    <?php echo ppc_btn('Edit', ppc_edit_url('property', (int)$p->ID)); ?>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                         </tbody>
