@@ -18,12 +18,18 @@ add_action('wp', function () {
         'properties',
         'repairs',
         'voids',
+        'tenants',
+        'tenancies',
         'add-property',
         'edit-property',
         'add-repair',
         'edit-repair',
         'add-void',
         'edit-void',
+        'add-tenant',
+        'edit-tenant',
+        'add-tenancy',
+        'edit-tenancy'
     ];
 
     if (is_page($slugs)) {

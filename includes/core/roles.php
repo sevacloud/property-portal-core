@@ -22,6 +22,16 @@ add_action('init', function () {
         $admin->add_cap('read_ppm_repair');
         $admin->add_cap('publish_ppm_repairs');
     }
+    if ($admin && !$admin->has_cap('edit_ppm_tenants')) {
+        $admin->add_cap('edit_ppm_tenants');
+        $admin->add_cap('read_ppm_tenant');
+        $admin->add_cap('publish_ppm_tenants');
+    }
+    if ($admin && !$admin->has_cap('edit_ppm_tenancies')) {
+        $admin->add_cap('edit_ppm_tenancies');
+        $admin->add_cap('read_ppm_tenancy');
+        $admin->add_cap('publish_ppm_tenancies');
+    }
 }, 30);
 
 add_action('init', function () {
@@ -32,6 +42,7 @@ add_action('init', function () {
     if ($staff) {
         // Basic read access to the CPTs (admin UI testing phase)
         $caps = [
+            'edit_posts', 'upload_files'
             // Property
             //'edit_others_ppm_properties', (REMOVE IN PROD)
             'read_ppm_property', 'read_private_ppm_properties',
@@ -67,6 +78,30 @@ add_action('init', function () {
             //'delete_published_ppm_repairs',
             //'delete_ppm_repairs',
             //'delete_private_ppm_repairs',
+
+            // Tenant
+            //'edit_others_ppm_tenants', (REMOVE IN PROD)
+            'read_ppm_tenant', 'read_private_ppm_tenants',
+            'edit_ppm_tenant', 'edit_ppm_tenants', 'edit_private_ppm_tenants',
+            'publish_ppm_tenants', 'edit_published_ppm_tenants',
+
+            // Repair Deletes (REMOVE IN PROD)
+            //'delete_others_ppm_tenants',
+            //'delete_published_ppm_tenants',
+            //'delete_ppm_tenants',
+            //'delete_private_ppm_tenants',
+
+            // Tenancy
+            //'edit_others_ppm_tenancies', (REMOVE IN PROD)
+            'read_ppm_tenancy', 'read_private_ppm_tenancies',
+            'edit_ppm_tenancy', 'edit_ppm_tenancies', 'edit_private_ppm_tenancies',
+            'publish_ppm_tenancies', 'edit_published_ppm_tenancies',
+
+            // Repair Deletes (REMOVE IN PROD)
+            //'delete_others_ppm_tenancies',
+            //'delete_published_ppm_tenancies',
+            //'delete_ppm_tenancies',
+            //'delete_private_ppm_tenancies',
 
             // Comments on repairs
             'moderate_comments',

@@ -350,4 +350,134 @@ add_action('acf/init', function () {
         'style' => 'default',
         'label_placement' => 'top',
     ]);
+
+    /**
+     * TENANT FIELDS (ACF Free)
+     */
+    acf_add_local_field_group([
+        'key' => 'group_ppc_tenant_fields',
+        'title' => 'Tenant Details',
+        'location' => [[[
+            'param' => 'post_type',
+            'operator' => '==',
+            'value' => 'ppm_tenant',
+        ]]],
+        'fields' => [
+            [
+                'key' => 'field_ppc_tenant_name',
+                'label' => 'Name',
+                'name' => 'tenant_name',
+                'type' => 'text',
+                'required' => 1,
+            ],
+            [
+                'key' => 'field_ppc_tenant_phone',
+                'label' => 'Phone Number',
+                'name' => 'tenant_phone',
+                'type' => 'text',
+                'required' => 1,
+            ],
+            [
+                'key' => 'field_ppc_tenant_dob',
+                'label' => 'Date of Birth',
+                'name' => 'tenancy_dob',
+                'type' => 'date_picker',
+                'return_format' => 'Y-m-d',
+                'required' => 1,
+            ],
+            [
+                'key' => 'field_ppc_tenant_email',
+                'label' => 'Email',
+                'name' => 'tenant_email',
+                'type' => 'email',
+                'required' => 0,
+            ],
+            [
+                'key' => 'field_ppc_tenant_children_count',
+                'label' => 'Number of Children',
+                'name' => 'tenant_children_count',
+                'type' => 'number',
+                'required' => 1,
+                'min' => 0,
+                'step' => 1,
+                'instructions' => 'Enter the total number of children living at the property.',
+            ],
+            [
+                'key' => 'field_ppc_tenant_notes',
+                'label' => 'Notes',
+                'name' => 'tenant_notes',
+                'type' => 'textarea',
+                'required' => 0,
+            ],
+            [
+                // Update to repeater field in pro
+                'key' => 'field_ppc_tenant_document',
+                'label' => 'Tenant Document',
+                'name' => 'tenant_document',
+                'type' => 'file',
+                'required' => 0,
+                'return_format' => 'id', // IMPORTANT
+                'library' => 'all',
+                'mime_types' => 'pdf,doc,docx,jpg,jpeg,png',
+                'instructions' => 'Upload supporting document (ID, agreement, etc).',
+            ],
+        ],
+        ]);
+
+    /**
+     * TENANCY FIELDS (ACF Free)
+     */
+    acf_add_local_field_group([
+        'key' => 'group_ppc_tenancy_fields',
+        'title' => 'Tenancy',
+        'location' => [[[
+            'param' => 'post_type',
+            'operator' => '==',
+            'value' => 'ppm_tenancy',
+        ]]],
+        'fields' => [
+            [
+                'key' => 'field_ppc_tenancy_property',
+                'label' => 'Property',
+                'name' => 'tenancy_property',
+                'type' => 'post_object',
+                'post_type' => ['ppm_property'],
+                'return_format' => 'id',
+                'required' => 1,
+            ],
+            [
+                'key' => 'field_ppc_tenancy_tenant',
+                'label' => 'Tenant',
+                'name' => 'tenancy_tenant',
+                'type' => 'post_object',
+                'post_type' => ['ppm_tenant'],
+                'return_format' => 'id',
+                'required' => 1,
+            ],
+            [
+                'key' => 'field_ppc_tenancy_start',
+                'label' => 'Start Date',
+                'name' => 'tenancy_start',
+                'type' => 'date_picker',
+                'return_format' => 'Y-m-d',
+                'required' => 1,
+            ],
+            [
+                'key' => 'field_ppc_tenancy_end',
+                'label' => 'End Date',
+                'name' => 'tenancy_end',
+                'type' => 'date_picker',
+                'return_format' => 'Y-m-d',
+                'required' => 0,
+                'instructions' => 'Leave blank for current tenancy.',
+            ],
+            [
+                'key' => 'field_ppc_tenancy_notes',
+                'label' => 'Notes',
+                'name' => 'tenancy_notes',
+                'type' => 'textarea',
+                'required' => 0,
+            ],
+        ],
+        ]);
 });

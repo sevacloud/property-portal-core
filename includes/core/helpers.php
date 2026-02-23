@@ -89,6 +89,46 @@ add_action('acf/save_post', function ($post_id) {
         }
     }
 
+    /*
+     |--------------------------------------------------------------------------
+     | TENANT
+     |--------------------------------------------------------------------------
+     */
+    if ($post_type === 'ppm_tenant') {
+
+        $name   = get_field('tenant_name', $post_id);
+        $tenant_phone = get_field('tenant_phone', $post_id);
+
+        if ($name && !empty($name->post_title)) {
+
+            if ($tenant_phone) {
+                $title = "{$name->post_title} – {$tenant_phone}";
+            } else {
+                $title = "{$name->post_title}";
+            }
+        }
+    }
+
+    /*
+     |--------------------------------------------------------------------------
+     | TENANCY
+     |--------------------------------------------------------------------------
+     */
+    if ($post_type === 'ppm_tenancy') {
+
+        $property   = get_field('tenancy_property', $post_id);
+        $tenant = get_field('tenancy_tenant', $post_id);
+
+        if ($property && !empty($property->post_title)) {
+
+            if ($tenant) {
+                $title = "{$property->post_title} – Add Tenant Name/Phone";
+            } else {
+                $title = "{$property->post_title} – Add Tenant Name/Phone (zzz)";
+            }
+        }
+    }
+
     if ($title) {
         wp_update_post([
             'ID'         => $post_id,

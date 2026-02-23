@@ -37,7 +37,7 @@ add_action('init', function () {
     	],
     ]);
 
-    // VOID (handover cycle)
+    // VOID (Handover Cycle)
     register_post_type('ppm_void', [
         'labels' => [
           'name'               => 'Voids',
@@ -69,7 +69,7 @@ add_action('init', function () {
     	],
     ]);
 
-    // REPAIR (work order)
+    // REPAIR (Work Order)
     register_post_type('ppm_repair', [
         'labels' => [
           'name'               => 'Repairs',
@@ -100,4 +100,52 @@ add_action('init', function () {
         	'edit_posts' => 'edit_ppm_repairs',
     	],
     ]);
+
+    // TENANT (Person/Family)
+    add_action('init', function () {
+      register_post_type('ppm_tenant', [
+        'labels' => [
+          'name'               => 'Tenants',
+          'singular_name'      => 'Tenant',
+          'menu_name'          => 'Tenants',
+          'add_new'            => 'Add Tenant',
+          'add_new_item'       => 'Add New Tenant',
+          'edit_item'          => 'Edit Tenant',
+          'new_item'           => 'New Tenant',
+          'view_item'          => 'View Tenant',
+          'search_items'       => 'Search Tenants',
+          'not_found'          => 'No tenant found',
+          'not_found_in_trash' => 'No tenant found in Trash',
+          'all_items'          => 'All Tenants',
+        ],
+        'public' => false,
+        'show_ui' => true,
+        'show_in_menu' => true,
+        'menu_icon' => 'dashicons-businessperson',
+        'supports' => ['thumbnail', 'comments'],
+      ]);
+
+      // TENANCY (Property occumation and repair history)
+      register_post_type('ppm_tenancy', [
+        'labels' => [
+          'name'               => 'Tenancies',
+          'singular_name'      => 'Tenancy',
+          'menu_name'          => 'Tenancies',
+          'add_new'            => 'Add Tenancy',
+          'add_new_item'       => 'Add New Tenancy',
+          'edit_item'          => 'Edit Tenancy',
+          'new_item'           => 'New Tenancy',
+          'view_item'          => 'View Tenancy',
+          'search_items'       => 'Search Tenancies',
+          'not_found'          => 'No tenancy found',
+          'not_found_in_trash' => 'No tenancy found in Trash',
+          'all_items'          => 'All Tenancies',
+        ],
+        'public' => false,
+        'show_ui' => true,
+        'show_in_menu' => true,
+        'menu_icon' => 'dashicons-clipboard',
+        'supports' => ['thumbnail', 'comments'],
+      ]);
+    });
 });
