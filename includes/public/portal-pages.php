@@ -71,7 +71,7 @@ add_shortcode('ppc_portal_layout', function ($atts) {
             <h2 class="ppc-sidebar__title ppc-h2">Menu</h2>
             <nav class="ppc-nav">
                 <?php foreach ($links as $label => $url): ?>
-                    <a class="ppc-btn" href="<?php echo esc_url($url); ?>"><?php echo esc_html($label); ?></a>
+                    <a class="ppc-menu-link" href="<?php echo esc_url($url); ?>"><?php echo esc_html($label); ?></a>
                 <?php endforeach; ?>
 
                 <a class="ppc-btn ppc-btn--danger"

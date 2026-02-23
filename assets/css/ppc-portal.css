@@ -84,6 +84,23 @@
 /* =========================================================
    Buttons / Links
    ========================================================= */
+.ppc-menu-link {
+  display: inline-block;
+  text-decoration: none;
+  border: 3px solid var(--ppc-color-border-light);
+  border-radius: var(--ppc-radius);
+  padding: 12px 14px;
+  background: var(--ppc-color-bg);
+  color: var(--ppc-color-text);
+  font-weight: 700;
+  box-shadow: var(--ppc-shadow-sm);
+  transition: all 0.15s ease;
+}
+
+.ppc-menu-link:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--ppc-shadow-md);
+}
 
 .ppc-btn {
   display: inline-block;
