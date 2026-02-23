@@ -87,8 +87,9 @@
 .ppc-menu-link {
   display: inline-block;
   text-decoration: none;
-  border: 3px solid var(--ppc-color-border-light);
-  border-radius: var(--ppc-radius);
+  border: 0;
+  border-bottom: 3px solid var(--ppc-color-border-light);
+  border-radius: 0;
   padding: 12px 14px;
   background: var(--ppc-color-bg);
   color: var(--ppc-color-text);
@@ -99,6 +100,7 @@
 
 .ppc-menu-link:hover {
   transform: translateY(-1px);
+  background: var(--ppc-color-bg-lightest);
   box-shadow: var(--ppc-shadow-md);
 }
 
@@ -308,6 +310,7 @@
   /* Backgrounds */
   --ppc-color-bg: #ffffff;
   --ppc-color-bg-subtle: #ac62a7;
+  --ppc-color-bg-lightest: #f5e9fc;
 
   /* Borders */
   --ppc-color-border: #ac62a7;
