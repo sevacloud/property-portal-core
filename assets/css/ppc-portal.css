@@ -125,8 +125,9 @@
 }
 
 .ppc-card {
-  border: 1px solid var(--ppc-color-border);
-  border-radius: var(--ppc-radius);
+  border: 0;
+  border-bottom: 3px solid var(--ppc-color-border-light);
+  border-radius: 0; /* optional: remove rounding since it's no longer a full border */
   padding: 14px;
   background: var(--ppc-color-bg);
   box-shadow: var(--ppc-shadow-sm);

@@ -120,8 +120,6 @@ add_shortcode('ppc_pm_dashboard', function () {
         return '<p>Access denied.</p>';
     }
 
-    $user_id = get_current_user_id();
-
     // "Open" statuses (everything except complete/cancelled)
     $closed_statuses = ['complete', 'cancelled'];
 
