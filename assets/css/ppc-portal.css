@@ -104,6 +104,12 @@
   box-shadow: var(--ppc-shadow-md);
 }
 
+.ppc-menu-link.active {
+  background: var(--ppc-color-primary-lightest);
+  color: var(--ppc-color-primary);
+  border-bottom-color: var(--ppc-color-primary);
+}
+
 .ppc-btn {
   display: inline-block;
   text-decoration: none;
@@ -304,7 +310,7 @@
   --ppc-color-text: #1a1a1a;
   --ppc-color-text-muted: #666666;
   --ppc-color-text-light: #888888;
-  --ppc-color-text-link: #0e20e4;
+  --ppc-color-text-link: #722d75;
   --ppc-color-text-link-hover: #049c3d;
 
   /* Backgrounds */
