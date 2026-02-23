@@ -15,7 +15,15 @@ add_shortcode('ppc_property', function ($atts) {
         return '<p>Access denied.</p>';
     }
 
-    $atts = shortcode_atts(['id' => 0], $atts);
+    $atts = shortcode_atts(['id' => 0, 'shell' => '1'], $atts);
+
+    // Standalone usage should keep the portal shell/sidebar.
+    // Internal route rendering uses shell="0" to avoid recursion.
+    $use_shell = !in_array(strtolower((string) $atts['shell']), ['0', 'false', 'no'], true);
+    if ($use_shell && empty($atts['id'])) {
+        return do_shortcode('[ppc_portal_layout content="property"]');
+    }
+
     $property_id = (int) $atts['id'];
     if ($property_id <= 0 && isset($_GET['id'])) {
         $property_id = (int) $_GET['id'];
@@ -290,4 +298,3 @@ add_shortcode('ppc_property', function ($atts) {
     <?php
     return ob_get_clean();
 });
-
