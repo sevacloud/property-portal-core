@@ -138,20 +138,29 @@ add_shortcode('ppc_property', function ($atts) {
 
     ob_start(); ?>
     <div class="ppc-stack">
-        <header class="ppc-header">
-            <div>
-                <h1 class="ppc-h1"><?php echo esc_html(get_the_title($property_id) ?: 'Property'); ?></h1>
-                <div class="ppc-muted">Property details and activity.</div>
-            </div>
-            <div class="ppc-actions">
-                <?php echo ppc_btn('Edit Property', ppc_edit_url('property', $property_id)); ?>
-                <?php echo ppc_btn('+ Start Tenancy', add_query_arg(['property_id' => $property_id], ppc_portal_url('add-tenancy'))); ?>
+        <header class="ppc-header ppc-property-header">
+            <h1 class="ppc-h1"><?php echo esc_html(get_the_title($property_id) ?: 'Property'); ?></h1>
+
+            <div class="ppc-actions ppc-property-header__actions">
                 <?php echo ppc_btn('+ Add Repair', ppc_portal_url('add-repair')); ?>
+
+                <details class="ppc-action-dropdown">
+                    <summary class="ppc-btn">More Actions</summary>
+                    <div class="ppc-action-dropdown__menu">
+                        <a class="ppc-action-dropdown__item" href="<?php echo esc_url(add_query_arg(['property_id' => $property_id], ppc_portal_url('add-tenancy'))); ?>">
+                            + Start Tenancy
+                        </a>
+                        <a class="ppc-action-dropdown__item" href="<?php echo esc_url(ppc_portal_url('add-repair')); ?>">
+                            + Add Repair
+                        </a>
+                    </div>
+                </details>
             </div>
-        </header>
+
+            <div class="ppc-muted">Property details and activity.</div>
 
         <section class="ppc-card">
-            <h2 class="ppc-h2">Details</h2>
+            <h2 class="ppc-h2">Property Details</h2>
             <div class="ppc-property-details-grid">
                 <div class="ppc-property-details-grid__media">
                     <?php if ($main_photo_id > 0): ?>
