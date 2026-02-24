@@ -28,7 +28,7 @@ add_action('wp_enqueue_scripts', function () {
 
     $slugs = [
         'property-management',
-        'properties', 'property', 'repairs', 'voids', 'tenants', 'tenancies',
+        'properties', 'property', 'repairs', 'repair', 'voids', 'void', 'tenants', 'tenant', 'tenancies', 'tenancy',
         'add-property', 'edit-property',
         'add-repair', 'edit-repair',
         'add-void', 'edit-void',

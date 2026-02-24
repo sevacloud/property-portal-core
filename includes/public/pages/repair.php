@@ -68,7 +68,7 @@ add_shortcode('ppc_repair', function ($atts) {
 
                 <div class="ppc-actions ppc-property-header__actions">
                     <a class="ppc-btn ppc-btn--compact" href="<?php echo esc_url(ppc_edit_url('repair', $repair_id)); ?>">Edit Repair</a>
-                    
+
                     <?php if ($property_id > 0): ?>
                         <a class="ppc-btn ppc-btn--compact" href="<?php echo esc_url(ppc_property_page_url($property_id)); ?>">View Property</a>
                     <?php endif; ?>
