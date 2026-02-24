@@ -67,6 +67,17 @@ add_shortcode('ppc_property', function ($atts) {
         ? ppc_get_current_tenancy_id_for_property($property_id)
         : 0;
 
+    $tenancy_inline_url = add_query_arg(['property_id' => $property_id], ppc_portal_url('add-tenancy'));
+    $tenancy_inline_tenant = 'No active tenancy';
+    $tenancy_inline_start = 'Click to start tenancy';
+    if ($current_tenancy_id > 0) {
+        $tenancy_inline_url = ppc_edit_url('tenancy', $current_tenancy_id);
+        $tenant_id = function_exists('get_field') ? (int) get_field('tenancy_tenant', $current_tenancy_id) : 0;
+        $tenancy_inline_tenant = $tenant_id ? (get_the_title($tenant_id) ?: '-') : '-';
+        $tenancy_start = function_exists('get_field') ? get_field('tenancy_start', $current_tenancy_id) : '';
+        $tenancy_inline_start = 'Start: ' . (ppc_fmt_date($tenancy_start) ?: '-');
+    }
+
     $open_repairs = get_posts([
         'post_type'      => 'ppm_repair',
         'post_status'    => 'publish',
@@ -170,6 +181,11 @@ add_shortcode('ppc_property', function ($atts) {
                     <?php if ($main_photo_id > 0): ?>
                         <?php echo wp_get_attachment_image($main_photo_id, 'large', false, ['class' => 'ppc-property-image']); ?>
                     <?php endif; ?>
+                    <a class="ppc-tenancy-inline" href="<?php echo esc_url($tenancy_inline_url); ?>">
+                        <h3 class="ppc-h3" style="font-size:15px;">Current Tenancy</h3>
+                        <div><strong><?php echo esc_html($tenancy_inline_tenant); ?></strong></div>
+                        <div class="ppc-muted"><?php echo esc_html($tenancy_inline_start); ?></div>
+                    </a>
                 </div>
                 <div class="ppc-property-details-grid__content">
                     <table class="ppc-property-details-table">
@@ -204,22 +220,6 @@ add_shortcode('ppc_property', function ($atts) {
                     </table>
                 </div>
             </div>
-        </section>
-
-        <section class="ppc-card">
-            <h2 class="ppc-h2">Current Tenancy</h2>
-            <?php if ($current_tenancy_id > 0): ?>
-                <?php
-                $tenant_id = function_exists('get_field') ? (int) get_field('tenancy_tenant', $current_tenancy_id) : 0;
-                $tenant_title = $tenant_id ? (get_the_title($tenant_id) ?: '-') : '-';
-                $start = function_exists('get_field') ? get_field('tenancy_start', $current_tenancy_id) : '';
-                ?>
-                <p><strong>Tenant:</strong> <?php echo esc_html($tenant_title); ?></p>
-                <p><strong>Start:</strong> <?php echo esc_html(ppc_fmt_date($start) ?: '-'); ?></p>
-                <p><?php echo ppc_btn('View Tenancy', ppc_edit_url('tenancy', $current_tenancy_id)); ?></p>
-            <?php else: ?>
-                <p>No active tenancy.</p>
-            <?php endif; ?>
         </section>
 
         <section class="ppc-card">

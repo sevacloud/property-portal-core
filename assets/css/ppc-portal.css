@@ -278,6 +278,24 @@
   display: block;
 }
 
+.ppc-tenancy-inline {
+  margin-top: 10px;
+  display: block;
+  border: 1px solid var(--ppc-color-border-light);
+  padding: 10px;
+  color: var(--ppc-color-text);
+  text-decoration: none;
+}
+
+.ppc-tenancy-inline:hover {
+  background: var(--ppc-color-bg-lightest);
+  text-decoration: none;
+}
+
+.ppc-tenancy-inline .ppc-h3 {
+  margin-bottom: 6px;
+}
+
 .ppc-property-details-table {
   width: 100%;
   border-collapse: collapse;
