@@ -145,13 +145,13 @@ add_shortcode('ppc_property', function ($atts) {
                 <?php echo ppc_btn('+ Add Repair', ppc_portal_url('add-repair')); ?>
 
                 <details class="ppc-action-dropdown">
-                    <summary class="ppc-btn">More Actions</summary>
+                    <summary class="ppc-btn"><span class="ppc-caret-left" aria-hidden="true">▾</span>Actions</summary>
                     <div class="ppc-action-dropdown__menu">
                         <a class="ppc-action-dropdown__item" href="<?php echo esc_url(add_query_arg(['property_id' => $property_id], ppc_portal_url('add-tenancy'))); ?>">
                             + Start Tenancy
                         </a>
-                        <a class="ppc-action-dropdown__item" href="<?php echo esc_url(ppc_portal_url('add-repair')); ?>">
-                            + Add Repair
+                        <a class="ppc-action-dropdown__item" href="<?php echo ppc_btn('Edit Property', ppc_edit_url('property', $property_id)); ?>">
+                            + Edit Property
                         </a>
                     </div>
                 </details>

@@ -196,6 +196,11 @@
   cursor: pointer;
 }
 
+.ppc-caret-left {
+  display: inline-block;
+  margin-right: 6px;
+}
+
 .ppc-action-dropdown > summary::-webkit-details-marker {
   display: none;
 }
