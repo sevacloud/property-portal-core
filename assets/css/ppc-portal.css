@@ -49,8 +49,10 @@
   padding: 16px;
   background: var(--ppc-color-bg);
   box-shadow: var(--ppc-shadow-sm);
-  height: 100%;
+  height: calc(100vh - 32px);
   position: sticky;
+  top: 32px;
+  overflow: auto;
 
   /* Make sure the grid items behave */
   width: 100%;
