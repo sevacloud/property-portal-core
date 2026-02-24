@@ -210,6 +210,9 @@ add_shortcode('ppc_repair', function ($atts) {
                 'nonce' => wp_create_nonce('ppc_mentions_nonce')
             ]);
 
+            // Disable duplicate comment detection for repair comments
+            add_filter('duplicate_comment_id', '__return_false');
+
             // Enable comments for this post type
             $repair_post = get_post($repair_id);
             if ($repair_post) {
@@ -219,14 +222,20 @@ add_shortcode('ppc_repair', function ($atts) {
                 $post = $repair_post;
                 setup_postdata($post);
 
-                // Display existing comments
-                if (have_comments()) {
+                // Get and display existing comments
+                $comments = get_comments([
+                    'post_id' => $repair_id,
+                    'status' => 'approve',
+                    'order' => 'ASC'
+                ]);
+
+                if (!empty($comments)) {
                     echo '<div style="margin-bottom: 20px;">';
                     wp_list_comments([
                         'style' => 'div',
                         'short_ping' => true,
                         'avatar_size' => 32,
-                    ]);
+                    ], $comments);
                     echo '</div>';
                 }
 
