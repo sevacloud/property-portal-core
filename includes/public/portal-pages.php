@@ -24,7 +24,9 @@ function ppc_edit_url(string $type, int $id): string {
  * (So it doesn’t affect the rest of the site)
  */
 add_action('wp_enqueue_scripts', function () {
-    if (!is_user_logged_in() || !function_exists('ppc_is_staff_user') || !ppc_is_staff_user()) return;
+    $is_staff_login_page = is_page('staff-login');
+    $is_staff_user = is_user_logged_in() && function_exists('ppc_is_staff_user') && ppc_is_staff_user();
+    if (!$is_staff_login_page && !$is_staff_user) return;
 
     $slugs = [
         'property-management', 'staff-login',
