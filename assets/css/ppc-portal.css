@@ -580,9 +580,6 @@
   .ppc-sidebar {
     position: static;
   }
-  .ppc-resource-details-grid {
-    grid-template-columns: 1fr;
-  }
   .ppc-resource-header__top {
     flex-wrap: wrap;
     align-items: flex-start;
@@ -593,6 +590,12 @@
   .ppc-action-dropdown__menu {
     position: static;
     margin-top: 6px;
+  }
+}
+
+@media (max-width: 760px) {
+  .ppc-resource-details-grid {
+    grid-template-columns: 1fr;
   }
 }
 
