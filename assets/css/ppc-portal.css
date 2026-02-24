@@ -69,6 +69,7 @@
 
 .ppc-summary-card--white {
   background: #ffffff;
+  border: 1px solid var(--ppc-color-border);
 }
 
 /* =========================================================

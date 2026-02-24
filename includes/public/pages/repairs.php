@@ -180,7 +180,7 @@ add_shortcode('ppc_repairs_overview', function () {
                     <option value="cancelled" <?php selected($filter_status, 'cancelled'); ?>>Cancelled</option>
                 </select>
 
-                <div style="display: flex; gap: 8px; align-items: center;">
+                <div style="display: flex; gap: 8px; align-items: end;">
                     <button type="submit" class="ppc-btn ppc-btn--compact">Apply</button>
                     <a href="<?php echo esc_url(ppc_portal_url('repairs')); ?>" class="ppc-btn ppc-btn--compact">Clear</a>
                 </div>
