@@ -108,7 +108,7 @@ add_shortcode('ppc_repair', function ($atts) {
                                 <tr>
                                     <th>Property</th>
                                     <td>
-                                        <a class="ppc-link" href="<?php echo esc_url(ppc_property_page_url($property_id)); ?>">
+                                        <a class="ppc-link" href="<?php echo esc_url(ppc_page_url('property', (int) $property_id)); ?>">
                                             <?php echo esc_html($property_title); ?>
                                         </a>
                                     </td>
