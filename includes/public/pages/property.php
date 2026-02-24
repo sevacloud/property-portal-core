@@ -172,14 +172,36 @@ add_shortcode('ppc_property', function ($atts) {
                     <?php endif; ?>
                 </div>
                 <div class="ppc-property-details-grid__content">
-                    <p><strong>Address:</strong> <?php echo esc_html(trim(implode(', ', array_filter([$line1, $line2, $town, $county, $postcode])) ) ?: '-'); ?></p>
-                    <p><strong>Property Code:</strong> <?php echo esc_html($code ?: '-'); ?></p>
-                    <p><strong>Region:</strong> <?php echo esc_html($region ?: '-'); ?></p>
-                    <p><strong>Status:</strong> <?php echo esc_html($status ?: '-'); ?></p>
-                    <p><strong>Managed By:</strong> <?php echo esc_html($managed_by ?: '-'); ?></p>
-                    <?php if (!empty($notes)): ?>
-                        <p><strong>Notes:</strong> <?php echo esc_html($notes); ?></p>
-                    <?php endif; ?>
+                    <table class="ppc-property-details-table">
+                        <tbody>
+                            <tr>
+                                <th>Address</th>
+                                <td><?php echo esc_html(trim(implode(', ', array_filter([$line1, $line2, $town, $county, $postcode])) ) ?: '-'); ?></td>
+                            </tr>
+                            <tr>
+                                <th>Property Code</th>
+                                <td><?php echo esc_html($code ?: '-'); ?></td>
+                            </tr>
+                            <tr>
+                                <th>Region</th>
+                                <td><?php echo esc_html($region ?: '-'); ?></td>
+                            </tr>
+                            <tr>
+                                <th>Status</th>
+                                <td><?php echo esc_html($status ?: '-'); ?></td>
+                            </tr>
+                            <tr>
+                                <th>Managed By</th>
+                                <td><?php echo esc_html($managed_by ?: '-'); ?></td>
+                            </tr>
+                            <?php if (!empty($notes)): ?>
+                                <tr>
+                                    <th>Notes</th>
+                                    <td><?php echo esc_html($notes); ?></td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </section>

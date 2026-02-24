@@ -270,12 +270,30 @@
   display: block;
 }
 
-.ppc-property-details-grid__content p {
-  margin: 0 0 6px 0;
+.ppc-property-details-table {
+  width: 100%;
+  border-collapse: collapse;
 }
 
-.ppc-property-details-grid__content p:last-child {
-  margin-bottom: 0;
+.ppc-property-details-table th,
+.ppc-property-details-table td {
+  padding: 6px 0;
+  border-bottom: 1px solid var(--ppc-color-border-light);
+  vertical-align: top;
+}
+
+.ppc-property-details-table th {
+  width: 160px;
+  text-align: left;
+  font-weight: 700;
+  color: var(--ppc-color-text);
+  padding-right: 12px;
+  white-space: nowrap;
+}
+
+.ppc-property-details-table tr:last-child th,
+.ppc-property-details-table tr:last-child td {
+  border-bottom: 0;
 }
 
 /* =========================================================
