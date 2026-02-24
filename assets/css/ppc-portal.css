@@ -53,7 +53,7 @@
 
 .ppc-summary-card {
   text-align: center;
-  padding: 16px;
+  padding: 10px 16px;
   border-radius: 8px;
   text-decoration: none;
   color: inherit;
@@ -592,6 +592,12 @@
   .ppc-action-dropdown__menu {
     position: static;
     margin-top: 6px;
+  }
+}
+
+@media (max-width: 400px) {
+  .ppc-resource-details-grid {
+    grid-template-columns: 1fr;
   }
 }
 
