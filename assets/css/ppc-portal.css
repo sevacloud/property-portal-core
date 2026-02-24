@@ -126,7 +126,11 @@
 }
 
 .ppc-btn:hover {
-  background: var(--ppc-color-bg-subtle);
+  text-decoration: underline;
+  background: var(--ppc-color-bg-lightest);
+  color: var(--ppc-color-text-link-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--ppc-shadow-md);
 }
 
 .ppc-btn--compact {
