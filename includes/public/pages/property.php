@@ -241,7 +241,7 @@ add_shortcode('ppc_property', function ($atts) {
                     <table class="ppc-table ppc-table--min820">
                         <thead>
                         <tr>
-                            <th class="ppc-th">Summary</th>
+                            <th class="ppc-th">Repair</th>
                             <th class="ppc-th">Owner</th>
                             <th class="ppc-th">Priority</th>
                             <th class="ppc-th">Status</th>
@@ -258,7 +258,11 @@ add_shortcode('ppc_property', function ($atts) {
                             $due = function_exists('get_field') ? get_field('repair_due_date', (int) $r->ID) : '';
                             ?>
                             <tr>
-                                <td class="ppc-td"><a class="ppc-link" href="<?php echo esc_url(ppc_edit_url('repair', (int) $r->ID)); ?>"><?php echo esc_html($summary ?: ($r->post_title ?: '-')); ?></a></td>
+                                <td class="ppc-td">
+                                    <a class="ppc-link" href="<?php echo esc_url(ppc_edit_url('repair', (int) $r->ID)); ?>">
+                                        <?php echo esc_html($summary ?: ($r->post_title ?: '-')); ?>
+                                    </a>
+                                </td>
                                 <td class="ppc-td"><?php echo esc_html($owner ?: '-'); ?></td>
                                 <td class="ppc-td"><?php echo esc_html($priority ?: '-'); ?></td>
                                 <td class="ppc-td"><?php echo esc_html($repair_status ?: '-'); ?></td>

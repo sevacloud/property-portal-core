@@ -262,11 +262,11 @@ add_shortcode('ppc_pm_dashboard', function () {
                 <p>No open repairs found.</p>
             <?php else: ?>
                 <div class="ppc-table-wrap">
-                    <table class="ppc-table--min820">
+                    <table class="ppc-table ppc-table--min820">
                         <thead>
                         <tr>
+                            <th class="ppc-th">Repair</th>
                             <th class="ppc-th">Property</th>
-                            <th class="ppc-th">Summary</th>
                             <th class="ppc-th">Owner</th>
                             <th class="ppc-th">Priority</th>
                             <th class="ppc-th">Status</th>
@@ -281,12 +281,13 @@ add_shortcode('ppc_pm_dashboard', function () {
                             $priority   = (string) get_field('repair_priority', $r->ID);
                             $status     = (string) get_field('repair_status', $r->ID);
                             $due        = get_field('repair_due_date', $r->ID);
+                            $summary    = (string) get_field('repair_summary', $r->ID);
                             ?>
                             <tr>
                                 <td class="ppc-td">
                                     <a class="ppc-link"
                                     href="<?php echo esc_url(ppc_edit_url('repair', (int)$r->ID)); ?>">
-                                        <?php echo esc_html(get_field('repair_summary', $r->ID) ?: $r->post_title); ?>
+                                        <?php echo esc_html($summary ?: ($r->post_title ?: '—')); ?>
                                     </a>
                                 </td>
                                 <td class="ppc-td"><?php echo esc_html($prop_title ?: '—'); ?></td>
@@ -392,8 +393,8 @@ add_shortcode('ppc_repairs_overview', function () {
                     <table class="ppc-table ppc-table--min820">
                         <thead>
                         <tr>
+                            <th class="ppc-th">Repair</th>
                             <th class="ppc-th">Property</th>
-                            <th class="ppc-th">Summary</th>
                             <th class="ppc-th">Owner</th>
                             <th class="ppc-th">Priority</th>
                             <th class="ppc-th">Status</th>
@@ -411,8 +412,12 @@ add_shortcode('ppc_repairs_overview', function () {
                             $summary    = function_exists('get_field') ? (string) get_field('repair_summary', $r->ID) : '';
                             ?>
                             <tr>
+                                <td class="ppc-td">
+                                    <a class="ppc-link" href="<?php echo esc_url(ppc_edit_url('repair', (int)$r->ID)); ?>">
+                                        <?php echo esc_html($summary ?: ($r->post_title ?: '—')); ?>
+                                    </a>
+                                </td>
                                 <td class="ppc-td"><?php echo esc_html($prop_title ?: '—'); ?></td>
-                                <td class="ppc-td"><?php echo esc_html($summary ?: ($r->post_title ?: '—')); ?></td>
                                 <td class="ppc-td"><?php echo esc_html($owner_name ?: 'Unassigned'); ?></td>
                                 <td class="ppc-td"><?php echo esc_html($priority ?: '—'); ?></td>
                                 <td class="ppc-td"><?php echo esc_html($status ?: '—'); ?></td>
