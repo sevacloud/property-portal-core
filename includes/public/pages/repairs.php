@@ -115,7 +115,7 @@ add_shortcode('ppc_repairs_overview', function () {
     ob_start(); ?>
 
     <div class="ppc-stack">
-        <header class="ppc-header">
+        <header class="ppc-header ppc-header--repairs">
             <div>
                 <h1 class="ppc-h1">Repairs</h1>
                 <div class="ppc-muted">View and manage repairs across all properties.</div>
