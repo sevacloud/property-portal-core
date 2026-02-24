@@ -138,26 +138,28 @@ add_shortcode('ppc_property', function ($atts) {
 
     ob_start(); ?>
     <div class="ppc-stack">
-        <header class="ppc-header ppc-property-header">
-            <h1 class="ppc-h1"><?php echo esc_html(get_the_title($property_id) ?: 'Property'); ?></h1>
+        <header class="ppc-property-header">
+            <div class="ppc-property-header__top">
+                <h1 class="ppc-h1"><?php echo esc_html(get_the_title($property_id) ?: 'Property'); ?></h1>
 
-            <div class="ppc-actions ppc-property-header__actions">
-                <?php echo ppc_btn('+ Add Repair', ppc_portal_url('add-repair')); ?>
+                <div class="ppc-actions ppc-property-header__actions">
+                    <a class="ppc-btn ppc-btn--compact" href="<?php echo esc_url(ppc_portal_url('add-repair')); ?>">+ Add Repair</a>
 
-                <details class="ppc-action-dropdown">
-                    <summary class="ppc-btn"><span class="ppc-caret-left" aria-hidden="true">▾</span>Actions</summary>
-                    <div class="ppc-action-dropdown__menu">
-                        <a class="ppc-action-dropdown__item" href="<?php echo esc_url(add_query_arg(['property_id' => $property_id], ppc_portal_url('add-tenancy'))); ?>">
-                            + Start Tenancy
-                        </a>
-                        <a class="ppc-action-dropdown__item" href="<?php echo ppc_btn('Edit Property', ppc_edit_url('property', $property_id)); ?>">
-                            + Edit Property
-                        </a>
-                    </div>
-                </details>
+                    <details class="ppc-action-dropdown">
+                        <summary class="ppc-btn ppc-btn--compact"><span class="ppc-caret-left" aria-hidden="true">&#9662;</span>Actions</summary>
+                        <div class="ppc-action-dropdown__menu">
+                            <a class="ppc-action-dropdown__item" href="<?php echo esc_url(add_query_arg(['property_id' => $property_id], ppc_portal_url('add-tenancy'))); ?>">
+                                + Start Tenancy
+                            </a>
+                            <a class="ppc-action-dropdown__item" href="<?php echo esc_url(ppc_edit_url('property', $property_id)); ?>">
+                                + Edit Property
+                            </a>
+                        </div>
+                    </details>
+                </div>
             </div>
-
             <div class="ppc-muted">Property details and activity.</div>
+        </header>
 
         <section class="ppc-card">
             <h2 class="ppc-h2">Property Details</h2>
