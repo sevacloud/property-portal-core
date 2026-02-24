@@ -123,7 +123,7 @@ add_shortcode('ppc_repairs_overview', function () {
 
             <div class="ppc-actions">
                 <form method="get" class="ppc-repairs-header-filters">
-                    <select name="property" class="ppc-repairs-header-filters__select">
+                    <select name="property" class="ppc-repairs-header-filters__select" onchange="this.form.submit()">
                         <option value="">All Properties</option>
                         <?php foreach ($properties as $prop): ?>
                             <option value="<?php echo esc_attr($prop->ID); ?>" <?php selected($filter_property, $prop->ID); ?>>
@@ -132,7 +132,7 @@ add_shortcode('ppc_repairs_overview', function () {
                         <?php endforeach; ?>
                     </select>
 
-                    <select name="priority" class="ppc-repairs-header-filters__select">
+                    <select name="priority" class="ppc-repairs-header-filters__select" onchange="this.form.submit()">
                         <option value="">All Priorities</option>
                         <option value="low" <?php selected($filter_priority, 'low'); ?>>Low</option>
                         <option value="medium" <?php selected($filter_priority, 'medium'); ?>>Medium</option>
@@ -141,7 +141,7 @@ add_shortcode('ppc_repairs_overview', function () {
                         <option value="emergency" <?php selected($filter_priority, 'emergency'); ?>>Emergency</option>
                     </select>
 
-                    <select name="status" class="ppc-repairs-header-filters__select">
+                    <select name="status" class="ppc-repairs-header-filters__select" onchange="this.form.submit()">
                         <option value="">All Statuses</option>
                         <option value="open" <?php selected($filter_status, 'open'); ?>>Open</option>
                         <option value="in_progress" <?php selected($filter_status, 'in_progress'); ?>>In Progress</option>
@@ -150,8 +150,6 @@ add_shortcode('ppc_repairs_overview', function () {
                         <option value="cancelled" <?php selected($filter_status, 'cancelled'); ?>>Cancelled</option>
                     </select>
 
-                    <button type="submit" class="ppc-btn ppc-btn--compact">Apply</button>
-                    <a href="<?php echo esc_url(ppc_portal_url('repairs')); ?>" class="ppc-btn ppc-btn--compact">Clear</a>
                 </form>
                 <?php echo ppc_btn('+ Add Repair', ppc_portal_url('add-repair')); ?>
             </div>
