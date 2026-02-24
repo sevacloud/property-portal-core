@@ -77,6 +77,27 @@ add_shortcode('ppc_repair', function ($atts) {
     if (is_object($related_void) && !empty($related_void->post_title)) $related_void_title = (string) $related_void->post_title;
     if (is_numeric($related_void) && (int) $related_void > 0) $related_void_title = get_the_title((int) $related_void) ?: '';
 
+    // Get current tenant details for the linked property
+    $current_tenant_details = 'Vacant';
+    if ($property_id > 0 && function_exists('ppc_get_current_tenancy_id_for_property')) {
+        $current_tenancy_id = ppc_get_current_tenancy_id_for_property($property_id);
+        if ($current_tenancy_id > 0) {
+            $tenant_id = function_exists('get_field') ? (int) get_field('tenancy_tenant', $current_tenancy_id) : 0;
+            if ($tenant_id > 0) {
+                $tenant_name = get_the_title($tenant_id) ?: '';
+                $tenant_phone = function_exists('get_field') ? (string) get_field('tenant_phone', $tenant_id) : '';
+                $tenant_email = function_exists('get_field') ? (string) get_field('tenant_email', $tenant_id) : '';
+
+                $tenant_parts = array_filter([$tenant_name, $tenant_phone, $tenant_email], function ($v) {
+                    return (string) $v !== '';
+                });
+                $current_tenant_details = !empty($tenant_parts) ? implode(' | ', $tenant_parts) : 'Occupied';
+            } else {
+                $current_tenant_details = 'Occupied';
+            }
+        }
+    }
+
     // Get main photo ID
     $main_photo_id = 0;
     if (is_array($main_photo) && !empty($main_photo['ID'])) $main_photo_id = (int) $main_photo['ID'];
@@ -143,6 +164,10 @@ add_shortcode('ppc_repair', function ($atts) {
                             <tr>
                                 <th>Assigned Owner</th>
                                 <td><?php echo esc_html($owner_name ?: 'Unassigned'); ?></td>
+                            </tr>
+                            <tr>
+                                <th>Current Tenant</th>
+                                <td><?php echo esc_html($current_tenant_details); ?></td>
                             </tr>
                             <tr>
                                 <th>Summary</th>
