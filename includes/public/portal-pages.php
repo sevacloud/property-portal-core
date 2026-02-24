@@ -226,14 +226,14 @@ add_shortcode('ppc_pm_dashboard', function () {
                 <p>No properties found.</p>
             <?php else: ?>
                 <div class="ppc-table-wrap">
-                    <table class="ppc-table ppc-table--min720">
+                    <table class="ppc-table ppc-table--min820">
                         <thead>
                         <tr>
                             <th class="ppc-th">Property</th>
                             <th class="ppc-th">Code</th>
+                            <th class="ppc-th">Current Tenant</th>
                             <th class="ppc-th">Region</th>
                             <th class="ppc-th">Status</th>
-                            <th class="ppc-th">Current Tenant</th>
                             <th class="ppc-th">Manager</th>
                         </tr>
                         </thead>
@@ -336,7 +336,7 @@ add_shortcode('ppc_pm_dashboard', function () {
                 <p>No active voids found.</p>
             <?php else: ?>
                 <div class="ppc-table-wrap">
-                    <table class="ppc-table--min720">
+                    <table class="ppc-table ppc-table--min820">
                         <thead>
                         <tr>
                             <th class="ppc-th">Property</th>
@@ -416,7 +416,7 @@ add_shortcode('ppc_voids_overview', function () {
                 <p>No voids found.</p>
             <?php else: ?>
                 <div class="ppc-table-wrap">
-                    <table class="ppc-table ppc-table--min720">
+                    <table class="ppc-table ppc-table--min820">
                         <thead>
                         <tr>
                             <th class="ppc-th">Property</th>
