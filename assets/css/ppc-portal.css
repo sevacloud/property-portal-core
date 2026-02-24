@@ -255,8 +255,8 @@
 
 .ppc-property-details-grid {
   display: grid;
-  grid-template-columns: minmax(180px, 360px) minmax(0, 1fr);
-  gap: 18px;
+  grid-template-columns: 200px minmax(0, 1fr);
+  gap: 20px;
   align-items: start;
 }
 
