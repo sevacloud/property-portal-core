@@ -214,6 +214,141 @@ function ppc_get_current_tenancy_id_for_property(int $property_id): int {
 }
 
 /**
+ * Find the current active void for a property.
+ * "Active" means void_stage is not completed (or not set).
+ */
+function ppc_get_active_void_id_for_property(int $property_id): int {
+    if ($property_id <= 0) return 0;
+
+    $voids = get_posts([
+        'post_type'      => 'ppm_void',
+        'post_status'    => 'publish',
+        'posts_per_page' => 1,
+        'orderby'        => 'date',
+        'order'          => 'DESC',
+        'meta_query'     => [
+            'relation' => 'AND',
+            [
+                'key'     => 'void_property',
+                'value'   => (string) $property_id,
+                'compare' => '=',
+            ],
+            [
+                'relation' => 'OR',
+                [
+                    'key'     => 'void_stage',
+                    'compare' => 'NOT EXISTS',
+                ],
+                [
+                    'key'     => 'void_stage',
+                    'value'   => ['completed'],
+                    'compare' => 'NOT IN',
+                ],
+            ],
+        ],
+    ]);
+
+    return !empty($voids) ? (int) $voids[0]->ID : 0;
+}
+
+/**
+ * Derive property occupancy status from related tenancy/void records.
+ * Priority: occupied (active tenancy) > maintenance (active void) > vacant.
+ */
+function ppc_get_derived_property_status(int $property_id): string {
+    if ($property_id <= 0) return 'vacant';
+
+    if (ppc_get_current_tenancy_id_for_property($property_id) > 0) {
+        return 'occupied';
+    }
+
+    if (ppc_get_active_void_id_for_property($property_id) > 0) {
+        return 'maintenance';
+    }
+
+    return 'vacant';
+}
+
+/**
+ * Persist derived status on the property record.
+ */
+function ppc_sync_property_status_from_related(int $property_id): void {
+    if ($property_id <= 0 || get_post_type($property_id) !== 'ppm_property') return;
+
+    static $running = false;
+    if ($running) return;
+    $running = true;
+
+    $next = ppc_get_derived_property_status($property_id);
+    $current = function_exists('get_field')
+        ? (string) get_field('property_status', $property_id)
+        : (string) get_post_meta($property_id, 'property_status', true);
+
+    if ($current !== $next) {
+        if (function_exists('update_field')) {
+            update_field('property_status', $next, $property_id);
+        } else {
+            update_post_meta($property_id, 'property_status', $next);
+        }
+    }
+
+    $running = false;
+}
+
+/**
+ * Keep property_status synced when related records are saved.
+ */
+add_action('acf/save_post', function ($post_id) {
+    if (wp_is_post_autosave($post_id) || wp_is_post_revision($post_id)) return;
+
+    $post_type = get_post_type($post_id);
+    if (!$post_type) return;
+
+    $property_id = 0;
+
+    if ($post_type === 'ppm_property') {
+        $property_id = (int) $post_id;
+    } elseif ($post_type === 'ppm_tenancy') {
+        $property = function_exists('get_field') ? get_field('tenancy_property', $post_id) : get_post_meta($post_id, 'tenancy_property', true);
+        if (is_object($property) && !empty($property->ID)) $property_id = (int) $property->ID;
+        if (is_numeric($property)) $property_id = (int) $property;
+    } elseif ($post_type === 'ppm_void') {
+        $property = function_exists('get_field') ? get_field('void_property', $post_id) : get_post_meta($post_id, 'void_property', true);
+        if (is_object($property) && !empty($property->ID)) $property_id = (int) $property->ID;
+        if (is_numeric($property)) $property_id = (int) $property;
+    }
+
+    if ($property_id > 0) {
+        ppc_sync_property_status_from_related($property_id);
+    }
+}, 30);
+
+/**
+ * Keep property_status synced when tenancy/void records are trashed/restored.
+ */
+add_action('trashed_post', function ($post_id) {
+    $post_type = get_post_type($post_id);
+    if (!in_array($post_type, ['ppm_tenancy', 'ppm_void'], true)) return;
+
+    $meta_key = $post_type === 'ppm_tenancy' ? 'tenancy_property' : 'void_property';
+    $property_id = (int) get_post_meta($post_id, $meta_key, true);
+    if ($property_id > 0) {
+        ppc_sync_property_status_from_related($property_id);
+    }
+});
+
+add_action('untrashed_post', function ($post_id) {
+    $post_type = get_post_type($post_id);
+    if (!in_array($post_type, ['ppm_tenancy', 'ppm_void'], true)) return;
+
+    $meta_key = $post_type === 'ppm_tenancy' ? 'tenancy_property' : 'void_property';
+    $property_id = (int) get_post_meta($post_id, $meta_key, true);
+    if ($property_id > 0) {
+        ppc_sync_property_status_from_related($property_id);
+    }
+});
+
+/**
  * Build a secure "End tenancy" URL.
  */
 function ppc_end_tenancy_url(int $tenancy_id, string $redirect_to = ''): string {
@@ -245,9 +380,16 @@ add_action('admin_post_ppc_end_tenancy', function () {
     }
 
     $end = function_exists('get_field') ? get_field('tenancy_end', $tenancy_id) : get_post_meta($tenancy_id, 'tenancy_end', true);
+    $property = function_exists('get_field') ? get_field('tenancy_property', $tenancy_id) : get_post_meta($tenancy_id, 'tenancy_property', true);
+    $property_id = 0;
+    if (is_object($property) && !empty($property->ID)) $property_id = (int) $property->ID;
+    if (is_numeric($property)) $property_id = (int) $property;
 
     // If already ended, just redirect
     if ($end) {
+        if ($property_id > 0) {
+            ppc_sync_property_status_from_related($property_id);
+        }
         $redirect_to = isset($_GET['redirect_to']) ? rawurldecode((string)$_GET['redirect_to']) : (wp_get_referer() ?: home_url('/'));
         wp_safe_redirect($redirect_to);
         exit;
@@ -259,6 +401,10 @@ add_action('admin_post_ppc_end_tenancy', function () {
         update_field('tenancy_end', $today, $tenancy_id);
     } else {
         update_post_meta($tenancy_id, 'tenancy_end', $today);
+    }
+
+    if ($property_id > 0) {
+        ppc_sync_property_status_from_related($property_id);
     }
 
     $redirect_to = isset($_GET['redirect_to']) ? rawurldecode((string)$_GET['redirect_to']) : (wp_get_referer() ?: home_url('/'));
