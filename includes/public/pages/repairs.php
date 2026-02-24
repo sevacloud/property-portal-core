@@ -197,7 +197,7 @@ add_shortcode('ppc_repairs_overview', function () {
                         <tr>
                             <th class="ppc-th">Repair</th>
                             <th class="ppc-th">Property</th>
-                            <th class="ppc-th">Owner</th>
+                            <th class="ppc-th">Current Tenant</th>
                             <th class="ppc-th">Priority</th>
                             <th class="ppc-th">Status</th>
                             <th class="ppc-th">Target</th>
@@ -207,7 +207,30 @@ add_shortcode('ppc_repairs_overview', function () {
                         <?php foreach ($repairs as $r): ?>
                             <?php
                             $prop_title = ppc_get_property_title_from_field('repair_property', (int)$r->ID);
-                            $owner_name = ppc_get_owner_name_from_field('repair_owner', (int)$r->ID);
+                            $repair_property = function_exists('get_field') ? get_field('repair_property', (int)$r->ID) : 0;
+                            $property_id = 0;
+                            if (is_object($repair_property) && !empty($repair_property->ID)) $property_id = (int) $repair_property->ID;
+                            if (is_numeric($repair_property)) $property_id = (int) $repair_property;
+
+                            $tenant_details = 'Vacant';
+                            if ($property_id > 0 && function_exists('ppc_get_current_tenancy_id_for_property')) {
+                                $current_tenancy_id = ppc_get_current_tenancy_id_for_property($property_id);
+                                if ($current_tenancy_id > 0) {
+                                    $tenant_id = function_exists('get_field') ? (int) get_field('tenancy_tenant', $current_tenancy_id) : 0;
+                                    if ($tenant_id > 0) {
+                                        $tenant_name = get_the_title($tenant_id) ?: '';
+                                        $tenant_phone = function_exists('get_field') ? (string) get_field('tenant_phone', $tenant_id) : '';
+                                        $tenant_email = function_exists('get_field') ? (string) get_field('tenant_email', $tenant_id) : '';
+
+                                        $tenant_parts = array_filter([$tenant_name, $tenant_phone, $tenant_email], function ($v) {
+                                            return (string) $v !== '';
+                                        });
+                                        $tenant_details = !empty($tenant_parts) ? implode(' | ', $tenant_parts) : 'Occupied';
+                                    } else {
+                                        $tenant_details = 'Occupied';
+                                    }
+                                }
+                            }
                             $priority   = function_exists('get_field') ? (string) get_field('repair_priority', $r->ID) : '';
                             $status     = function_exists('get_field') ? (string) get_field('repair_status', $r->ID) : '';
                             $due        = function_exists('get_field') ? get_field('repair_due_date', $r->ID) : '';
@@ -220,7 +243,7 @@ add_shortcode('ppc_repairs_overview', function () {
                                     </a>
                                 </td>
                                 <td class="ppc-td"><?php echo esc_html($prop_title ?: '—'); ?></td>
-                                <td class="ppc-td"><?php echo esc_html($owner_name ?: 'Unassigned'); ?></td>
+                                <td class="ppc-td"><?php echo esc_html($tenant_details); ?></td>
                                 <td class="ppc-td"><?php echo esc_html($priority ?: '—'); ?></td>
                                 <td class="ppc-td"><?php echo esc_html($status ?: '—'); ?></td>
                                 <td class="ppc-td"><?php echo esc_html(ppc_fmt_date($due) ?: '—'); ?></td>
