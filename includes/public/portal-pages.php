@@ -86,6 +86,7 @@ add_shortcode('ppc_portal_layout', function ($atts) {
                 case 'properties':    echo do_shortcode('[ppc_properties_overview]');         break;
                 case 'property':      echo do_shortcode('[ppc_property shell="0"]');          break;
                 case 'repairs':       echo do_shortcode('[ppc_repairs_overview]');            break;
+                case 'repair':        echo do_shortcode('[ppc_repair shell="0"]');            break;
                 case 'voids':         echo do_shortcode('[ppc_voids_overview]');              break;
                 case 'tenants':       echo do_shortcode('[ppc_tenants_overview]');            break;
                 case 'tenancies':     echo do_shortcode('[ppc_tenancies_overview]');          break;
