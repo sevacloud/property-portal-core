@@ -44,13 +44,26 @@ add_shortcode('ppc_repair', function ($atts) {
     $related_void = $get('repair_related_void');
     $main_photo = $get('repair_main_photo');
     $owner = $get('repair_owner');
-    $notes = (string) $get('repair_notes');
+    $notes = (string) $get('repair_internal_notes');
+    if ($notes === '') $notes = (string) $get('repair_notes');
     $priority = (string) $get('repair_priority');
     $status = (string) $get('repair_status');
     $due_date = $get('repair_due_date');
     $completion_date = $get('repair_completion_date');
     $cost = (string) $get('repair_cost');
     $contractor = (string) $get('repair_contractor');
+    $responsibility = (string) $get('repair_responsibility');
+    $external_contractor_name = (string) $get('repair_external_contractor_name');
+    $external_contractor_phone = (string) $get('repair_external_contractor_phone');
+
+    $responsibility_label_map = [
+        'ywca' => 'YWCA',
+        'together_housing_group' => 'Together Housing Group',
+        'external_contractor' => 'External Contractor',
+    ];
+    $responsibility_label = isset($responsibility_label_map[$responsibility])
+        ? $responsibility_label_map[$responsibility]
+        : '';
 
     // Get owner display name
     $owner_name = '';
@@ -163,6 +176,20 @@ add_shortcode('ppc_repair', function ($atts) {
                                 <td><?php echo esc_html($owner_name ?: 'Unassigned'); ?></td>
                             </tr>
                             <tr>
+                                <th>Responsibility</th>
+                                <td><?php echo esc_html($responsibility_label ?: '-'); ?></td>
+                            </tr>
+                            <?php if ($responsibility === 'external_contractor'): ?>
+                                <tr>
+                                    <th>External Contractor Name</th>
+                                    <td><?php echo esc_html($external_contractor_name ?: '-'); ?></td>
+                                </tr>
+                                <tr>
+                                    <th>External Contractor Phone</th>
+                                    <td><?php echo esc_html($external_contractor_phone ?: '-'); ?></td>
+                                </tr>
+                            <?php endif; ?>
+                            <tr>
                                 <th>Current Tenant</th>
                                 <td><?php echo esc_html($current_tenant_details); ?></td>
                             </tr>
@@ -179,7 +206,7 @@ add_shortcode('ppc_repair', function ($atts) {
                             <?php if ($notes): ?>
                                 <tr>
                                     <th>Notes</th>
-                                    <td><?php echo esc_html($notes); ?></td>
+                                    <td><?php echo wp_kses_post($notes); ?></td>
                                 </tr>
                             <?php endif; ?>
                             <tr>

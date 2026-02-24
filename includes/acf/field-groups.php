@@ -325,6 +325,51 @@ add_action('acf/init', function () {
                 'return_format' => 'array',
             ],
             [
+                'key' => 'field_ppc_repair_responsibility',
+                'label' => 'Responsibility',
+                'name' => 'repair_responsibility',
+                'type' => 'select',
+                'choices' => [
+                    'ywca' => 'YWCA',
+                    'together_housing_group' => 'Together Housing Group',
+                    'external_contractor' => 'External Contractor',
+                ],
+                'allow_null' => 1,
+                'ui' => 1,
+            ],
+            [
+                'key' => 'field_ppc_repair_external_contractor_name',
+                'label' => 'External Contractor Name',
+                'name' => 'repair_external_contractor_name',
+                'type' => 'text',
+                'required' => 1,
+                'conditional_logic' => [
+                    [
+                        [
+                            'field' => 'field_ppc_repair_responsibility',
+                            'operator' => '==',
+                            'value' => 'external_contractor',
+                        ],
+                    ],
+                ],
+            ],
+            [
+                'key' => 'field_ppc_repair_external_contractor_phone',
+                'label' => 'External Contractor Phone Number',
+                'name' => 'repair_external_contractor_phone',
+                'type' => 'text',
+                'required' => 1,
+                'conditional_logic' => [
+                    [
+                        [
+                            'field' => 'field_ppc_repair_responsibility',
+                            'operator' => '==',
+                            'value' => 'external_contractor',
+                        ],
+                    ],
+                ],
+            ],
+            [
                 'key' => 'field_ppc_repair_due_date',
                 'label' => 'Target Completion Date',
                 'name' => 'repair_due_date',
