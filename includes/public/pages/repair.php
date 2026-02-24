@@ -85,10 +85,7 @@ add_shortcode('ppc_repair', function ($atts) {
             $tenant_id = function_exists('get_field') ? (int) get_field('tenancy_tenant', $current_tenancy_id) : 0;
             if ($tenant_id > 0) {
                 $tenant_name = get_the_title($tenant_id) ?: '';
-                $tenant_phone = function_exists('get_field') ? (string) get_field('tenant_phone', $tenant_id) : '';
-                $tenant_email = function_exists('get_field') ? (string) get_field('tenant_email', $tenant_id) : '';
-
-                $tenant_parts = array_filter([$tenant_name, $tenant_phone, $tenant_email], function ($v) {
+                $tenant_parts = array_filter([$tenant_name], function ($v) {
                     return (string) $v !== '';
                 });
                 $current_tenant_details = !empty($tenant_parts) ? implode(' | ', $tenant_parts) : 'Occupied';
