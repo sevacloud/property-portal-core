@@ -203,12 +203,12 @@ add_shortcode('ppc_repair', function ($atts) {
         <section class="ppc-card">
             <h2 class="ppc-h2">Comments</h2>
             <?php
-            /* // Enqueue mentions script
+            // Enqueue mentions script
             wp_enqueue_script('ppc-mentions', plugin_dir_url(__FILE__) . '../../../assets/js/ppc-mentions.js', [], '1.0', true);
             wp_localize_script('ppc-mentions', 'ppcMentions', [
                 'ajaxUrl' => admin_url('admin-ajax.php'),
                 'nonce' => wp_create_nonce('ppc_mentions_nonce')
-            ]); */
+            ]);
 
             // Disable duplicate comment detection for repair comments
             add_filter('duplicate_comment_id', '__return_false');
