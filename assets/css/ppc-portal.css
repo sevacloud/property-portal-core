@@ -288,6 +288,7 @@
   padding: 6px 0;
   border-bottom: 1px solid var(--ppc-color-border-light);
   vertical-align: top;
+  text-align: left;
 }
 
 .ppc-property-details-table th {
