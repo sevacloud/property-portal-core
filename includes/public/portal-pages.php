@@ -312,7 +312,7 @@ add_shortcode('ppc_pm_dashboard', function () {
                             <tr>
                                 <td class="ppc-td">
                                     <a class="ppc-link"
-                                    href="<?php echo esc_url(ppc_edit_url('repair', (int)$r->ID)); ?>">
+                                    href="<?php echo esc_url(ppc_page_url('repair', (int)$p->ID)); ?>">
                                         <?php echo esc_html($summary ?: ($r->post_title ?: '—')); ?>
                                     </a>
                                 </td>
@@ -360,7 +360,7 @@ add_shortcode('ppc_pm_dashboard', function () {
                             <tr>
                                 <td class="ppc-td">
                                     <a class="ppc-link"
-                                    href="<?php echo esc_url(ppc_edit_url('void', (int)$v->ID)); ?>">
+                                    href="<?php echo esc_url(ppc_page_url('void', (int)$p->ID)); ?>">
                                         <?php echo esc_html($prop_title ?: '—'); ?>
                                     </a>
                                 </td>

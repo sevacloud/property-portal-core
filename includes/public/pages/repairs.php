@@ -60,7 +60,7 @@ add_shortcode('ppc_repairs_overview', function () {
                             ?>
                             <tr>
                                 <td class="ppc-td">
-                                    <a class="ppc-link" href="<?php echo esc_url(ppc_edit_url('repair', (int)$r->ID)); ?>">
+                                    <a class="ppc-link" href="<?php echo esc_url(ppc_page_url('repair', (int)$p->ID)); ?>">
                                         <?php echo esc_html($summary ?: ($r->post_title ?: '—')); ?>
                                     </a>
                                 </td>
