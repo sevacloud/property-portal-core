@@ -719,6 +719,17 @@ add_shortcode('ppc_repair_form', function ($atts) {
         $post_id = $id;
     }
 
+    // Prefill selected property when creating from a property context.
+    $prefill_property_id = ($mode === 'create' && isset($_GET['property_id'])) ? (int) $_GET['property_id'] : 0;
+    $filter_property = null;
+    if ($prefill_property_id > 0) {
+        $filter_property = function ($field) use ($prefill_property_id) {
+            if (empty($field['value'])) $field['value'] = $prefill_property_id;
+            return $field;
+        };
+        add_filter('acf/prepare_field/name=repair_property', $filter_property, 20);
+    }
+
     ob_start();
     echo '<h1 class="ppc-h1">' . esc_html($mode === 'edit' ? 'Edit Repair' : 'Add Repair') . '</h1>';
 
@@ -733,7 +744,12 @@ add_shortcode('ppc_repair_form', function ($atts) {
         'return'       => ppc_portal_url(''),
     ]);
 
-    return ob_get_clean();
+    $html = ob_get_clean();
+
+    // Remove temporary prefill filter so it does not affect other forms.
+    if ($filter_property) remove_filter('acf/prepare_field/name=repair_property', $filter_property, 20);
+
+    return $html;
 });
 
 /**
