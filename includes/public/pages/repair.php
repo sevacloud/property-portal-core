@@ -104,16 +104,18 @@ add_shortcode('ppc_repair', function ($atts) {
                 <div class="ppc-resource-details-grid__content">
                     <table class="ppc-resource-details-table">
                         <tbody>
-                            <?php if ($property_title): ?>
-                                <tr>
-                                    <th>Property</th>
-                                    <td>
+                            <tr>
+                                <th>Property</th>
+                                <td>
+                                    <?php if ($property_title): ?>
                                         <a class="ppc-link" href="<?php echo esc_url(ppc_page_url('property', (int) $property_id)); ?>">
                                             <?php echo esc_html($property_title); ?>
                                         </a>
-                                    </td>
-                                </tr>
-                            <?php endif; ?>
+                                    <?php else: ?>
+                                        -
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
                             <?php if ($category): ?>
                                 <tr>
                                     <th>Category</th>
