@@ -5,7 +5,7 @@ if (!defined('ABSPATH')) exit;
 add_action('current_screen', function ($screen) {
     if (!is_admin() || empty($screen->post_type)) return;
 
-    $restricted = ['ppm_property', 'ppm_void', 'ppm_repair'];
+    $restricted = ['ppm_property', 'ppm_void', 'ppm_repair', 'ppm_tenant', 'ppm_tenancy'];
 
     if (in_array($screen->post_type, $restricted, true) && !current_user_can('manage_options')) {
         wp_safe_redirect(home_url('/property-management/'));
