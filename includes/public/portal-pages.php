@@ -68,7 +68,6 @@ add_shortcode('ppc_portal_layout', function ($atts) {
     ob_start(); ?>
     <div class="ppc-app">
         <aside class="ppc-sidebar">
-            <h2 class="ppc-sidebar__title ppc-h2">Menu</h2>
             <nav class="ppc-nav">
                 <?php foreach ($links as $label => $url): ?>
                     <a class="ppc-menu-link" href="<?php echo esc_url($url); ?>"><?php echo esc_html($label); ?></a>
@@ -208,7 +207,7 @@ add_shortcode('ppc_pm_dashboard', function () {
     <div class="ppc-stack">
         <header class="ppc-header">
             <div>
-                <h2 class="ppc-h1">Dashboard</h2>
+                <h1 class="ppc-h1">Dashboard</h1>
                 <div class="ppc-muted">Quick view of repairs and voids.</div>
             </div>
 

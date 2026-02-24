@@ -152,17 +152,23 @@ add_shortcode('ppc_property', function ($atts) {
 
         <section class="ppc-card">
             <h2 class="ppc-h2">Details</h2>
-            <?php if ($main_photo_id > 0): ?>
-                <p><?php echo wp_get_attachment_image($main_photo_id, 'medium'); ?></p>
-            <?php endif; ?>
-            <p><strong>Address:</strong> <?php echo esc_html(trim(implode(', ', array_filter([$line1, $line2, $town, $county, $postcode])) ) ?: '-'); ?></p>
-            <p><strong>Code:</strong> <?php echo esc_html($code ?: '-'); ?></p>
-            <p><strong>Region:</strong> <?php echo esc_html($region ?: '-'); ?></p>
-            <p><strong>Status:</strong> <?php echo esc_html($status ?: '-'); ?></p>
-            <p><strong>Manager:</strong> <?php echo esc_html($manager_name ?: '-'); ?></p>
-            <?php if (!empty($notes)): ?>
-                <p><strong>Notes:</strong> <?php echo esc_html($notes); ?></p>
-            <?php endif; ?>
+            <div class="ppc-property-details-grid">
+                <div class="ppc-property-details-grid__media">
+                    <?php if ($main_photo_id > 0): ?>
+                        <?php echo wp_get_attachment_image($main_photo_id, 'large', false, ['class' => 'ppc-property-image']); ?>
+                    <?php endif; ?>
+                </div>
+                <div class="ppc-property-details-grid__content">
+                    <p><strong>Address:</strong> <?php echo esc_html(trim(implode(', ', array_filter([$line1, $line2, $town, $county, $postcode])) ) ?: '-'); ?></p>
+                    <p><strong>Property Code:</strong> <?php echo esc_html($code ?: '-'); ?></p>
+                    <p><strong>Region:</strong> <?php echo esc_html($region ?: '-'); ?></p>
+                    <p><strong>Status:</strong> <?php echo esc_html($status ?: '-'); ?></p>
+                    <p><strong>Property Manager:</strong> <?php echo esc_html($manager_name ?: '-'); ?></p>
+                    <?php if (!empty($notes)): ?>
+                        <p><strong>Notes:</strong> <?php echo esc_html($notes); ?></p>
+                    <?php endif; ?>
+                </div>
+            </div>
         </section>
 
         <section class="ppc-card">

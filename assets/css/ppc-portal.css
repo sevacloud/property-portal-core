@@ -174,6 +174,23 @@
   flex-wrap: wrap;
 }
 
+.ppc-property-details-grid {
+  display: grid;
+  grid-template-columns: minmax(180px, 360px) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.ppc-property-details-grid__media {
+  min-height: 1px;
+}
+
+.ppc-property-image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
 /* =========================================================
    Portal Headings
    ========================================================= */
@@ -286,6 +303,9 @@
   }
   .ppc-sidebar {
     position: static;
+  }
+  .ppc-property-details-grid {
+    grid-template-columns: 1fr;
   }
 }
 
