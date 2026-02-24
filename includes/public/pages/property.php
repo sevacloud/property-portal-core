@@ -45,6 +45,8 @@ add_shortcode('ppc_property', function ($atts) {
     $code = (string) $get('property_code');
     $region = (string) $get('property_region');
     $status = (string) $get('property_status');
+    $last_health_safety_inspection = $get('property_last_health_safety_inspection');
+    $last_void_date = $get('property_last_void_date');
     $notes = (string) $get('property_notes');
     $main_photo = $get('property_main_photo');
     $manager = $get('property_manager');
@@ -205,6 +207,14 @@ add_shortcode('ppc_property', function ($atts) {
                             <tr>
                                 <th>Status</th>
                                 <td><?php echo esc_html($status ?: '-'); ?></td>
+                            </tr>
+                            <tr>
+                                <th>Last Health and Safety Inspection</th>
+                                <td><?php echo esc_html(ppc_fmt_date($last_health_safety_inspection) ?: '-'); ?></td>
+                            </tr>
+                            <tr>
+                                <th>Last Void Date</th>
+                                <td><?php echo esc_html(ppc_fmt_date($last_void_date) ?: '-'); ?></td>
                             </tr>
                             <tr>
                                 <th>Managed By</th>
