@@ -40,6 +40,17 @@
   text-decoration: underline;
 }
 
+.ppc-app input,
+.ppc-app select,
+.ppc-app textarea {
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+
+.ppc-app input::placeholder {
+  color: #666666 !important;
+}
+
 /* =========================================================
    Sidebar
    ========================================================= */
