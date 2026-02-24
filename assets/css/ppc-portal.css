@@ -643,3 +643,70 @@
   /* Shadow */
   --ppc-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
+
+/* =========================================================
+   Login Form
+   ========================================================= */
+
+.ppc-app .login,
+.ppc-app #loginform {
+  background: var(--ppc-color-bg);
+  border: 0;
+  border-bottom: 3px solid var(--ppc-color-border-light);
+  padding: 20px;
+  box-shadow: var(--ppc-shadow-sm);
+}
+
+.ppc-app .login label,
+.ppc-app #loginform label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: var(--ppc-color-text);
+}
+
+.ppc-app .login input[type="text"],
+.ppc-app .login input[type="password"],
+.ppc-app .login input[type="email"],
+.ppc-app #loginform input[type="text"],
+.ppc-app #loginform input[type="password"],
+.ppc-app #loginform input[type="email"] {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--ppc-color-border);
+  border-radius: 4px;
+  margin-bottom: 12px;
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+
+.ppc-app .login input[type="submit"],
+.ppc-app #loginform input[type="submit"] {
+  background: var(--ppc-color-bg);
+  border: 1px solid var(--ppc-color-border-strong);
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: var(--ppc-color-text);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ppc-app .login input[type="submit"]:hover,
+.ppc-app #loginform input[type="submit"]:hover {
+  background: var(--ppc-color-bg-lightest);
+  color: var(--ppc-color-text-link-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--ppc-shadow-sm);
+}
+
+.ppc-app .login .forgetmenot,
+.ppc-app #loginform .forgetmenot {
+  margin-bottom: 12px;
+}
+
+.ppc-app .login .forgetmenot input,
+.ppc-app #loginform .forgetmenot input {
+  width: auto;
+  margin-right: 6px;
+}
