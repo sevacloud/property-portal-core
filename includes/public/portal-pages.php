@@ -230,24 +230,49 @@ add_shortcode('ppc_pm_dashboard', function () {
                         <thead>
                         <tr>
                             <th class="ppc-th">Property</th>
-                            <th class="ppc-th">Created</th>
-                            <th class="ppc-th">Action</th>
+                            <th class="ppc-th">Code</th>
+                            <th class="ppc-th">Region</th>
+                            <th class="ppc-th">Status</th>
+                            <th class="ppc-th">Current Tenant</th>
+                            <th class="ppc-th">Manager</th>
                         </tr>
                         </thead>
                         <tbody>
                         <?php foreach ($all_properties as $p): ?>
+                            <?php
+                            $code = function_exists('get_field') ? (string) get_field('property_code', (int)$p->ID) : '';
+                            $region = function_exists('get_field') ? (string) get_field('property_region', (int)$p->ID) : '';
+                            $status = function_exists('get_field') ? (string) get_field('property_status', (int)$p->ID) : '';
+                            $manager = function_exists('get_field') ? get_field('property_manager', (int)$p->ID) : '';
+
+                            $managed_by = '';
+                            if (is_string($manager) && $manager !== '') $managed_by = $manager;
+                            if (is_array($manager) && !empty($manager['display_name'])) $managed_by = (string) $manager['display_name'];
+                            if (is_object($manager) && !empty($manager->display_name)) $managed_by = (string) $manager->display_name;
+                            if (is_numeric($manager) && (int) $manager > 0) {
+                                $m = get_user_by('id', (int) $manager);
+                                if ($m && !empty($m->display_name)) $managed_by = (string) $m->display_name;
+                            }
+
+                            // Get current tenant
+                            $current_tenancy_id = function_exists('ppc_get_current_tenancy_id_for_property') ? ppc_get_current_tenancy_id_for_property((int)$p->ID) : 0;
+                            $current_tenant = '';
+                            if ($current_tenancy_id > 0) {
+                                $tenant_id = function_exists('get_field') ? (int) get_field('tenancy_tenant', $current_tenancy_id) : 0;
+                                $current_tenant = $tenant_id ? (get_the_title($tenant_id) ?: '') : '';
+                            }
+                            ?>
                             <tr>
                                 <td class="ppc-td">
                                     <a class="ppc-link" href="<?php echo esc_url(ppc_page_url('property', (int)$p->ID)); ?>">
                                         <?php echo esc_html($p->post_title ?: '—'); ?>
                                     </a>
                                 </td>
-                                <td class="ppc-td">
-                                    <?php echo esc_html(date('d M Y', strtotime($p->post_date))); ?>
-                                </td>
-                                <td class="ppc-td">
-                                    <?php echo ppc_btn('View', ppc_page_url('property', (int)$p->ID)); ?>
-                                </td>
+                                <td class="ppc-td"><?php echo esc_html($code ?: '—'); ?></td>
+                                <td class="ppc-td"><?php echo esc_html($current_tenant ?: 'Vacant'); ?></td>
+                                <td class="ppc-td"><?php echo esc_html($region ?: '—'); ?></td>
+                                <td class="ppc-td"><?php echo esc_html($status ?: '—'); ?></td>
+                                <td class="ppc-td"><?php echo esc_html($managed_by ?: '—'); ?></td>
                             </tr>
                         <?php endforeach; ?>
                         </tbody>
