@@ -51,6 +51,22 @@
   color: #666666 !important;
 }
 
+.ppc-summary-card {
+  text-align: center;
+  padding: 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ppc-summary-card:hover {
+  text-decoration: none;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
 /* =========================================================
    Sidebar
    ========================================================= */

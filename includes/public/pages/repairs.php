@@ -14,6 +14,7 @@ add_shortcode('ppc_repairs_overview', function () {
     $filter_property = isset($_GET['property']) ? (int) $_GET['property'] : 0;
     $filter_priority = isset($_GET['priority']) ? sanitize_text_field($_GET['priority']) : '';
     $filter_status = isset($_GET['status']) ? sanitize_text_field($_GET['status']) : '';
+    $filter_overdue = isset($_GET['overdue']) ? (bool) $_GET['overdue'] : false;
     $search = isset($_GET['search']) ? sanitize_text_field($_GET['search']) : '';
 
     // Get all repairs for counting
@@ -83,6 +84,15 @@ add_shortcode('ppc_repairs_overview', function () {
         ];
     }
     
+    if ($filter_overdue) {
+        $meta_query[] = [
+            'key'     => 'repair_due_date',
+            'value'   => date('Y-m-d'),
+            'compare' => '<',
+            'type'    => 'DATE',
+        ];
+    }
+    
     if ($search) {
         $query_args['s'] = $search;
     }
@@ -119,22 +129,22 @@ add_shortcode('ppc_repairs_overview', function () {
         <section class="ppc-card">
             <h2 class="ppc-h2">Summary</h2>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px;">
-                <div style="text-align: center; padding: 16px; background: var(--ppc-color-bg-lightest); border-radius: 8px;">
+                <a href="<?php echo esc_url(add_query_arg(['status' => ''], ppc_portal_url('repairs'))); ?>" class="ppc-summary-card" style="background: var(--ppc-color-bg-lightest);">
                     <div style="font-size: 24px; font-weight: 800; color: var(--ppc-color-h1);"><?php echo $open_count; ?></div>
                     <div style="font-size: 13px; color: var(--ppc-color-text-muted);">Open Repairs</div>
-                </div>
-                <div style="text-align: center; padding: 16px; background: #fff3cd; border-radius: 8px;">
+                </a>
+                <a href="<?php echo esc_url(add_query_arg(['priority' => 'urgent'], ppc_portal_url('repairs'))); ?>" class="ppc-summary-card" style="background: #fff3cd;">
                     <div style="font-size: 24px; font-weight: 800; color: #856404;"><?php echo $urgent_count; ?></div>
                     <div style="font-size: 13px; color: #856404;">Urgent</div>
-                </div>
-                <div style="text-align: center; padding: 16px; background: #f8d7da; border-radius: 8px;">
+                </a>
+                <a href="<?php echo esc_url(add_query_arg(['priority' => 'emergency'], ppc_portal_url('repairs'))); ?>" class="ppc-summary-card" style="background: #f8d7da;">
                     <div style="font-size: 24px; font-weight: 800; color: #721c24;"><?php echo $emergency_count; ?></div>
                     <div style="font-size: 13px; color: #721c24;">Emergency</div>
-                </div>
-                <div style="text-align: center; padding: 16px; background: #f5c6cb; border-radius: 8px;">
+                </a>
+                <a href="<?php echo esc_url(add_query_arg(['overdue' => '1'], ppc_portal_url('repairs'))); ?>" class="ppc-summary-card" style="background: #f5c6cb;">
                     <div style="font-size: 24px; font-weight: 800; color: #721c24;"><?php echo $overdue_count; ?></div>
                     <div style="font-size: 13px; color: #721c24;">Overdue</div>
-                </div>
+                </a>
             </div>
         </section>
 
