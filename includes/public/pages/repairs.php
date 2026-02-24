@@ -10,6 +10,38 @@ add_shortcode('ppc_repairs_overview', function () {
         return '<p>Access denied.</p>';
     }
 
+    // Get all repairs for counting
+    $all_repairs = get_posts([
+        'post_type'      => 'ppm_repair',
+        'post_status'    => 'publish',
+        'posts_per_page' => -1,
+        'fields'         => 'ids',
+    ]);
+
+    // Count repairs by status and priority
+    $open_count = 0;
+    $urgent_count = 0;
+    $emergency_count = 0;
+    $overdue_count = 0;
+    $today = date('Y-m-d');
+
+    foreach ($all_repairs as $repair_id) {
+        $status = function_exists('get_field') ? (string) get_field('repair_status', $repair_id) : '';
+        $priority = function_exists('get_field') ? (string) get_field('repair_priority', $repair_id) : '';
+        $due_date = function_exists('get_field') ? get_field('repair_due_date', $repair_id) : '';
+        
+        // Skip completed/cancelled repairs
+        if (in_array($status, ['complete', 'cancelled'])) continue;
+        
+        $open_count++;
+        
+        if ($priority === 'urgent') $urgent_count++;
+        if ($priority === 'emergency') $emergency_count++;
+        
+        // Check if overdue
+        if ($due_date && $due_date < $today) $overdue_count++;
+    }
+
     $repairs = get_posts([
         'post_type'      => 'ppm_repair',
         'post_status'    => 'publish',
@@ -31,6 +63,28 @@ add_shortcode('ppc_repairs_overview', function () {
                 <?php echo ppc_btn('+ Add Repair', ppc_portal_url('add-repair')); ?>
             </div>
         </header>
+
+        <section class="ppc-card">
+            <h2 class="ppc-h2">Summary</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px;">
+                <div style="text-align: center; padding: 16px; background: var(--ppc-color-bg-lightest); border-radius: 8px;">
+                    <div style="font-size: 24px; font-weight: 800; color: var(--ppc-color-h1);"><?php echo $open_count; ?></div>
+                    <div style="font-size: 13px; color: var(--ppc-color-text-muted);">Open Repairs</div>
+                </div>
+                <div style="text-align: center; padding: 16px; background: #fff3cd; border-radius: 8px;">
+                    <div style="font-size: 24px; font-weight: 800; color: #856404;"><?php echo $urgent_count; ?></div>
+                    <div style="font-size: 13px; color: #856404;">Urgent</div>
+                </div>
+                <div style="text-align: center; padding: 16px; background: #f8d7da; border-radius: 8px;">
+                    <div style="font-size: 24px; font-weight: 800; color: #721c24;"><?php echo $emergency_count; ?></div>
+                    <div style="font-size: 13px; color: #721c24;">Emergency</div>
+                </div>
+                <div style="text-align: center; padding: 16px; background: #f5c6cb; border-radius: 8px;">
+                    <div style="font-size: 24px; font-weight: 800; color: #721c24;"><?php echo $overdue_count; ?></div>
+                    <div style="font-size: 13px; color: #721c24;">Overdue</div>
+                </div>
+            </div>
+        </section>
 
         <section class="ppc-card">
             <?php if (empty($repairs)): ?>
