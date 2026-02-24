@@ -36,15 +36,15 @@ add_shortcode('ppc_repairs_overview', function () {
         $status = function_exists('get_field') ? (string) get_field('repair_status', $repair_id) : '';
         $priority = function_exists('get_field') ? (string) get_field('repair_priority', $repair_id) : '';
         $due_date = function_exists('get_field') ? get_field('repair_due_date', $repair_id) : '';
-        
+
         // Skip completed/cancelled repairs
         if (in_array($status, ['complete', 'cancelled'])) continue;
-        
+
         $open_count++;
-        
+
         if ($priority === 'urgent') $urgent_count++;
         if ($priority === 'emergency') $emergency_count++;
-        
+
         // Check if overdue
         if ($due_date && $due_date < $today) $overdue_count++;
     }
@@ -59,7 +59,7 @@ add_shortcode('ppc_repairs_overview', function () {
     ];
 
     $meta_query = [];
-    
+
     if ($filter_property > 0) {
         $meta_query[] = [
             'key'     => 'repair_property',
@@ -67,7 +67,7 @@ add_shortcode('ppc_repairs_overview', function () {
             'compare' => '=',
         ];
     }
-    
+
     if ($filter_priority) {
         $meta_query[] = [
             'key'     => 'repair_priority',
@@ -75,7 +75,7 @@ add_shortcode('ppc_repairs_overview', function () {
             'compare' => '=',
         ];
     }
-    
+
     if ($filter_status) {
         $meta_query[] = [
             'key'     => 'repair_status',
@@ -83,7 +83,7 @@ add_shortcode('ppc_repairs_overview', function () {
             'compare' => '=',
         ];
     }
-    
+
     if ($filter_overdue) {
         $meta_query[] = [
             'key'     => 'repair_due_date',
@@ -92,17 +92,17 @@ add_shortcode('ppc_repairs_overview', function () {
             'type'    => 'DATE',
         ];
     }
-    
+
     if ($search) {
         $query_args['s'] = $search;
     }
-    
+
     if (!empty($meta_query)) {
         $query_args['meta_query'] = $meta_query;
     }
 
     $repairs = get_posts($query_args);
-    
+
     // Get all properties for filter dropdown
     $properties = get_posts([
         'post_type'      => 'ppm_property',
@@ -152,7 +152,7 @@ add_shortcode('ppc_repairs_overview', function () {
             <h2 class="ppc-h2">Search & Filter</h2>
             <form method="get" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 20px;">
                 <input type="text" name="search" placeholder="Search repairs..." value="<?php echo esc_attr($search); ?>" style="padding: 8px; border: 1px solid var(--ppc-color-border); border-radius: 4px;">
-                
+
                 <select name="property" style="padding: 8px; border: 1px solid var(--ppc-color-border); border-radius: 4px;">
                     <option value="">All Properties</option>
                     <?php foreach ($properties as $prop): ?>
@@ -161,7 +161,7 @@ add_shortcode('ppc_repairs_overview', function () {
                         </option>
                     <?php endforeach; ?>
                 </select>
-                
+
                 <select name="priority" style="padding: 8px; border: 1px solid var(--ppc-color-border); border-radius: 4px;">
                     <option value="">All Priorities</option>
                     <option value="low" <?php selected($filter_priority, 'low'); ?>>Low</option>
@@ -170,7 +170,7 @@ add_shortcode('ppc_repairs_overview', function () {
                     <option value="urgent" <?php selected($filter_priority, 'urgent'); ?>>Urgent</option>
                     <option value="emergency" <?php selected($filter_priority, 'emergency'); ?>>Emergency</option>
                 </select>
-                
+
                 <select name="status" style="padding: 8px; border: 1px solid var(--ppc-color-border); border-radius: 4px;">
                     <option value="">All Statuses</option>
                     <option value="open" <?php selected($filter_status, 'open'); ?>>Open</option>
@@ -179,9 +179,9 @@ add_shortcode('ppc_repairs_overview', function () {
                     <option value="complete" <?php selected($filter_status, 'complete'); ?>>Complete</option>
                     <option value="cancelled" <?php selected($filter_status, 'cancelled'); ?>>Cancelled</option>
                 </select>
-                
-                <div style="display: flex; gap: 8px;">
-                    <button type="submit" class="ppc-btn ppc-btn--compact">Filter</button>
+
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <button type="submit" class="ppc-btn ppc-btn--compact">Apply</button>
                     <a href="<?php echo esc_url(ppc_portal_url('repairs')); ?>" class="ppc-btn ppc-btn--compact">Clear</a>
                 </div>
             </form>
