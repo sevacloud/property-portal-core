@@ -312,7 +312,7 @@ add_shortcode('ppc_pm_dashboard', function () {
                             <tr>
                                 <td class="ppc-td">
                                     <a class="ppc-link"
-                                    href="<?php echo esc_url(ppc_page_url('repair', (int)$p->ID)); ?>">
+                                    href="<?php echo esc_url(ppc_page_url('repair', (int)$r->ID)); ?>">
                                         <?php echo esc_html($summary ?: ($r->post_title ?: '—')); ?>
                                     </a>
                                 </td>
