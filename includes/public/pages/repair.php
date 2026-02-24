@@ -62,7 +62,15 @@ add_shortcode('ppc_repair', function ($atts) {
     }
 
     // Get property title
-    $property_title = $property_id ? (get_the_title($property_id) ?: '') : '';
+    $property_title = '';
+    $property = $get('repair_property');
+    if (is_object($property) && !empty($property->post_title)) {
+        $property_title = (string) $property->post_title;
+        $property_id = (int) $property->ID;
+    } elseif (is_numeric($property) && (int) $property > 0) {
+        $property_id = (int) $property;
+        $property_title = get_the_title($property_id) ?: '';
+    }
 
     // Get related void title
     $related_void_title = '';
