@@ -10,6 +10,12 @@ add_shortcode('ppc_repairs_overview', function () {
         return '<p>Access denied.</p>';
     }
 
+    // Get filter parameters
+    $filter_property = isset($_GET['property']) ? (int) $_GET['property'] : 0;
+    $filter_priority = isset($_GET['priority']) ? sanitize_text_field($_GET['priority']) : '';
+    $filter_status = isset($_GET['status']) ? sanitize_text_field($_GET['status']) : '';
+    $search = isset($_GET['search']) ? sanitize_text_field($_GET['search']) : '';
+
     // Get all repairs for counting
     $all_repairs = get_posts([
         'post_type'      => 'ppm_repair',
@@ -42,12 +48,58 @@ add_shortcode('ppc_repairs_overview', function () {
         if ($due_date && $due_date < $today) $overdue_count++;
     }
 
-    $repairs = get_posts([
+    // Build query args for filtered repairs
+    $query_args = [
         'post_type'      => 'ppm_repair',
         'post_status'    => 'publish',
         'posts_per_page' => 50,
         'orderby'        => 'date',
         'order'          => 'DESC',
+    ];
+
+    $meta_query = [];
+    
+    if ($filter_property > 0) {
+        $meta_query[] = [
+            'key'     => 'repair_property',
+            'value'   => (string) $filter_property,
+            'compare' => '=',
+        ];
+    }
+    
+    if ($filter_priority) {
+        $meta_query[] = [
+            'key'     => 'repair_priority',
+            'value'   => $filter_priority,
+            'compare' => '=',
+        ];
+    }
+    
+    if ($filter_status) {
+        $meta_query[] = [
+            'key'     => 'repair_status',
+            'value'   => $filter_status,
+            'compare' => '=',
+        ];
+    }
+    
+    if ($search) {
+        $query_args['s'] = $search;
+    }
+    
+    if (!empty($meta_query)) {
+        $query_args['meta_query'] = $meta_query;
+    }
+
+    $repairs = get_posts($query_args);
+    
+    // Get all properties for filter dropdown
+    $properties = get_posts([
+        'post_type'      => 'ppm_property',
+        'post_status'    => 'publish',
+        'posts_per_page' => -1,
+        'orderby'        => 'title',
+        'order'          => 'ASC',
     ]);
 
     ob_start(); ?>
@@ -84,6 +136,45 @@ add_shortcode('ppc_repairs_overview', function () {
                     <div style="font-size: 13px; color: #721c24;">Overdue</div>
                 </div>
             </div>
+        </section>
+
+        <section class="ppc-card">
+            <h2 class="ppc-h2">Search & Filter</h2>
+            <form method="get" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 20px;">
+                <input type="text" name="search" placeholder="Search repairs..." value="<?php echo esc_attr($search); ?>" style="padding: 8px; border: 1px solid var(--ppc-color-border); border-radius: 4px;">
+                
+                <select name="property" style="padding: 8px; border: 1px solid var(--ppc-color-border); border-radius: 4px;">
+                    <option value="">All Properties</option>
+                    <?php foreach ($properties as $prop): ?>
+                        <option value="<?php echo esc_attr($prop->ID); ?>" <?php selected($filter_property, $prop->ID); ?>>
+                            <?php echo esc_html($prop->post_title ?: 'Untitled'); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                
+                <select name="priority" style="padding: 8px; border: 1px solid var(--ppc-color-border); border-radius: 4px;">
+                    <option value="">All Priorities</option>
+                    <option value="low" <?php selected($filter_priority, 'low'); ?>>Low</option>
+                    <option value="medium" <?php selected($filter_priority, 'medium'); ?>>Medium</option>
+                    <option value="high" <?php selected($filter_priority, 'high'); ?>>High</option>
+                    <option value="urgent" <?php selected($filter_priority, 'urgent'); ?>>Urgent</option>
+                    <option value="emergency" <?php selected($filter_priority, 'emergency'); ?>>Emergency</option>
+                </select>
+                
+                <select name="status" style="padding: 8px; border: 1px solid var(--ppc-color-border); border-radius: 4px;">
+                    <option value="">All Statuses</option>
+                    <option value="open" <?php selected($filter_status, 'open'); ?>>Open</option>
+                    <option value="in_progress" <?php selected($filter_status, 'in_progress'); ?>>In Progress</option>
+                    <option value="pending" <?php selected($filter_status, 'pending'); ?>>Pending</option>
+                    <option value="complete" <?php selected($filter_status, 'complete'); ?>>Complete</option>
+                    <option value="cancelled" <?php selected($filter_status, 'cancelled'); ?>>Cancelled</option>
+                </select>
+                
+                <div style="display: flex; gap: 8px;">
+                    <button type="submit" class="ppc-btn ppc-btn--compact">Filter</button>
+                    <a href="<?php echo esc_url(ppc_portal_url('repairs')); ?>" class="ppc-btn ppc-btn--compact">Clear</a>
+                </div>
+            </form>
         </section>
 
         <section class="ppc-card">
