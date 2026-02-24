@@ -318,6 +318,11 @@
   white-space: nowrap;
 }
 
+.ppc-property-details-table tr:first-child th,
+.ppc-property-details-table tr:first-child td {
+  padding-top: 0;
+}
+
 .ppc-property-details-table tr:last-child th,
 .ppc-property-details-table tr:last-child td {
   border-bottom: 0;
