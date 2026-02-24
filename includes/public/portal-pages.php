@@ -27,13 +27,12 @@ add_action('wp_enqueue_scripts', function () {
     if (!is_user_logged_in() || !function_exists('ppc_is_staff_user') || !ppc_is_staff_user()) return;
 
     $slugs = [
-        'property-management',
-        'properties', 'property', 'repairs', 'repair', 'voids', 'void', 'tenants', 'tenant', 'tenancies', 'tenancy',
-        'add-property', 'edit-property',
-        'add-repair', 'edit-repair',
-        'add-void', 'edit-void',
-        'add-tenant', 'edit-tenant',
-        'add-tenancy', 'edit-tenancy',
+        'property-management', 'staff-login',
+        'properties', 'property', 'add-property', 'edit-property',
+        'repairs', 'repair', 'add-repair', 'edit-repair',
+        'voids', 'void', 'add-void', 'edit-void',
+        'tenants', 'tenant', 'add-tenant', 'edit-tenant',
+        'tenancies', 'tenancy', 'add-tenancy', 'edit-tenancy',
     ];
     if (!is_page($slugs)) return;
 
