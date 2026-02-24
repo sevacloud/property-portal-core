@@ -199,6 +199,47 @@ add_shortcode('ppc_repair', function ($atts) {
                 </div>
             </div>
         </section>
+
+        <section class="ppc-card">
+            <h2 class="ppc-h2">Comments</h2>
+            <?php
+            // Enable comments for this post type
+            $repair_post = get_post($repair_id);
+            if ($repair_post) {
+                // Temporarily override the global post for comments
+                global $post;
+                $original_post = $post;
+                $post = $repair_post;
+                setup_postdata($post);
+                
+                // Display existing comments
+                if (have_comments()) {
+                    echo '<div style="margin-bottom: 20px;">';
+                    wp_list_comments([
+                        'style' => 'div',
+                        'short_ping' => true,
+                        'avatar_size' => 32,
+                    ]);
+                    echo '</div>';
+                }
+                
+                // Display comment form
+                comment_form([
+                    'title_reply' => 'Add Comment',
+                    'label_submit' => 'Post Comment',
+                    'comment_field' => '<p class="comment-form-comment"><label for="comment">Comment</label><textarea id="comment" name="comment" cols="45" rows="8" required></textarea></p>',
+                ]);
+                
+                // Restore original post
+                $post = $original_post;
+                if ($original_post) {
+                    setup_postdata($post);
+                } else {
+                    wp_reset_postdata();
+                }
+            }
+            ?>
+        </section>
     </div>
     <?php
     return ob_get_clean();

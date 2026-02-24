@@ -69,7 +69,68 @@
 
 .ppc-summary-card--white {
   background: #ffffff;
+  border: 1px solid var(--ppc-color-border-light);
+}
+
+/* =========================================================
+   Comments
+   ========================================================= */
+
+.ppc-app .commentlist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ppc-app .comment {
+  border-bottom: 1px solid var(--ppc-color-border-light);
+  padding: 12px 0;
+  margin: 0;
+}
+
+.ppc-app .comment-author {
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.ppc-app .comment-meta {
+  font-size: 12px;
+  color: var(--ppc-color-text-muted);
+  margin-bottom: 8px;
+}
+
+.ppc-app .comment-content p {
+  margin: 0 0 8px 0;
+}
+
+.ppc-app .comment-form label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.ppc-app .comment-form input,
+.ppc-app .comment-form textarea {
+  width: 100%;
+  max-width: 500px;
+  padding: 8px;
   border: 1px solid var(--ppc-color-border);
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.ppc-app .comment-form .form-submit {
+  margin: 0;
+}
+
+.ppc-app .comment-form .submit {
+  background: var(--ppc-color-bg);
+  border: 1px solid var(--ppc-color-border-strong);
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: var(--ppc-color-text);
+  font-weight: 700;
+  cursor: pointer;
 }
 
 /* =========================================================
