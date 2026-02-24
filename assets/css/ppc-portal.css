@@ -595,12 +595,6 @@
   }
 }
 
-@media (max-width: 400px) {
-  .ppc-resource-details-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
 /* =========================================================
    Portal Design Tokens
    ========================================================= */
