@@ -153,11 +153,11 @@ add_shortcode('ppc_property', function ($atts) {
 
     ob_start(); ?>
     <div class="ppc-stack">
-        <header class="ppc-property-header">
-            <div class="ppc-property-header__top">
+        <header class="ppc-resource-header">
+            <div class="ppc-resource-header__top">
                 <h1 class="ppc-h1"><?php echo esc_html(get_the_title($property_id) ?: 'Property'); ?></h1>
 
-                <div class="ppc-actions ppc-property-header__actions">
+                <div class="ppc-actions ppc-resource-header__actions">
                     <a class="ppc-btn ppc-btn--compact" href="<?php echo esc_url(add_query_arg(['property_id' => $property_id], ppc_portal_url('add-repair'))); ?>">+ Add Repair</a>
 
                     <details class="ppc-action-dropdown">
@@ -178,10 +178,10 @@ add_shortcode('ppc_property', function ($atts) {
 
         <section class="ppc-card">
             <h2 class="ppc-h2">Property Details</h2>
-            <div class="ppc-property-details-grid">
-                <div class="ppc-property-details-grid__media">
+            <div class="ppc-resource-details-grid">
+                <div class="ppc-resource-details-grid__media">
                     <?php if ($main_photo_id > 0): ?>
-                        <?php echo wp_get_attachment_image($main_photo_id, 'large', false, ['class' => 'ppc-property-image']); ?>
+                        <?php echo wp_get_attachment_image($main_photo_id, 'large', false, ['class' => 'ppc-resource-image']); ?>
                     <?php endif; ?>
                     <a class="ppc-tenancy-inline" href="<?php echo esc_url($tenancy_inline_url); ?>">
                         <h3 class="ppc-h3" style="font-size:15px;">Current Tenancy</h3>
@@ -189,8 +189,8 @@ add_shortcode('ppc_property', function ($atts) {
                         <div class="ppc-muted"><?php echo esc_html($tenancy_inline_start); ?></div>
                     </a>
                 </div>
-                <div class="ppc-property-details-grid__content">
-                    <table class="ppc-property-details-table">
+                <div class="ppc-resource-details-grid__content">
+                    <table class="ppc-resource-details-table">
                         <tbody>
                             <tr>
                                 <th>Address</th>
