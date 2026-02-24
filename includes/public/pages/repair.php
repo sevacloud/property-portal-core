@@ -213,6 +213,24 @@ add_shortcode('ppc_repair', function ($atts) {
             // Disable duplicate comment detection for repair comments
             add_filter('duplicate_comment_id', '__return_false');
 
+            // Enable inline threaded reply behavior on shortcode-rendered page.
+            if (comments_open($repair_id) && get_option('thread_comments')) {
+                wp_enqueue_script('comment-reply');
+            }
+
+            // Fallback: force reply links to the portal repair URL (not CPT permalink).
+            $reply_link_filter = function ($link, $args, $comment, $post) use ($repair_id) {
+                if ((int) $post->ID !== (int) $repair_id) return $link;
+
+                $target = add_query_arg([
+                    'id' => (int) $repair_id,
+                    'replytocom' => (int) $comment->comment_ID,
+                ], ppc_portal_url('repair')) . '#respond';
+
+                return preg_replace('/href=("|\')(.*?)\1/', 'href="' . esc_url($target) . '"', $link, 1);
+            };
+            add_filter('comment_reply_link', $reply_link_filter, 10, 4);
+
             // Enable comments for this post type
             $repair_post = get_post($repair_id);
             if ($repair_post) {
@@ -254,6 +272,8 @@ add_shortcode('ppc_repair', function ($atts) {
                     wp_reset_postdata();
                 }
             }
+
+            remove_filter('comment_reply_link', $reply_link_filter, 10);
             ?>
         </section>
     </div>
