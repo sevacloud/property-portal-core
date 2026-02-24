@@ -44,7 +44,7 @@ add_shortcode('ppc_properties_overview', function () {
                         $status = function_exists('get_field') ? (string) get_field('property_status', (int)$p->ID) : '';
                         $manager = function_exists('get_field') ? get_field('property_manager', (int)$p->ID) : '';
                         $main_photo = function_exists('get_field') ? get_field('property_main_photo', (int)$p->ID) : null;
-                        
+
                         $managed_by = '';
                         if (is_string($manager) && $manager !== '') $managed_by = $manager;
                         if (is_array($manager) && !empty($manager['display_name'])) $managed_by = (string) $manager['display_name'];
@@ -53,11 +53,11 @@ add_shortcode('ppc_properties_overview', function () {
                             $m = get_user_by('id', (int) $manager);
                             if ($m && !empty($m->display_name)) $managed_by = (string) $m->display_name;
                         }
-                        
+
                         $main_photo_id = 0;
                         if (is_array($main_photo) && !empty($main_photo['ID'])) $main_photo_id = (int) $main_photo['ID'];
                         if (is_numeric($main_photo)) $main_photo_id = (int) $main_photo;
-                        
+
                         // Get current tenant
                         $current_tenancy_id = function_exists('ppc_get_current_tenancy_id_for_property') ? ppc_get_current_tenancy_id_for_property((int)$p->ID) : 0;
                         $current_tenant = '';
@@ -66,7 +66,7 @@ add_shortcode('ppc_properties_overview', function () {
                             $current_tenant = $tenant_id ? (get_the_title($tenant_id) ?: '') : '';
                         }
                         ?>
-                        <a class="ppc-card" href="<?php echo esc_url(ppc_page_url('property', (int)$p->ID)); ?>" style="text-decoration: none; color: inherit; display: block;">
+                        <a class="ppc-resource-card" href="<?php echo esc_url(ppc_page_url('property', (int)$p->ID)); ?>" style="text-decoration: none; color: inherit; display: block;">
                             <div class="ppc-property-details-grid">
                                 <div class="ppc-property-details-grid__media">
                                     <?php if ($main_photo_id > 0): ?>

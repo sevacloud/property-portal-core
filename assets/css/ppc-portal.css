@@ -173,6 +173,20 @@
   box-shadow: var(--ppc-shadow-sm);
 }
 
+.ppc-resource-card {
+  border: 0;
+  border-bottom: 3px solid var(--ppc-color-border-light);
+  border-radius: 0;
+  padding: 14px;
+  background: var(--ppc-color-bg);
+  box-shadow: var(--ppc-shadow-sm);
+  transition: background 0.15s ease;
+}
+
+.ppc-resource-card:hover {
+  background: var(--ppc-color-bg-lightest);
+}
+
 .ppc-card__title {
   margin: 0 0 10px 0;
   font-size: 16px;
