@@ -191,6 +191,14 @@
   display: block;
 }
 
+.ppc-property-details-grid__content p {
+  margin: 0 0 6px 0;
+}
+
+.ppc-property-details-grid__content p:last-child {
+  margin-bottom: 0;
+}
+
 /* =========================================================
    Portal Headings
    ========================================================= */
