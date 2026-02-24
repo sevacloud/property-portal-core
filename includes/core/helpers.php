@@ -533,3 +533,21 @@ add_action('acf/validate_save_post', function () {
     $property_title = get_the_title($property_id) ?: 'this property';
     acf_add_validation_error('', $property_title . ' already has a current tenancy. End the current tenancy first.');
 }, 20);
+
+/**
+ * Get users for @ mentions
+ */
+add_action('wp_ajax_ppc_get_users_for_mentions', 'ppc_get_users_for_mentions');
+add_action('wp_ajax_nopriv_ppc_get_users_for_mentions', 'ppc_get_users_for_mentions');
+
+function ppc_get_users_for_mentions() {
+    check_ajax_referer('ppc_mentions_nonce', 'nonce');
+    
+    $users = get_users([
+        'fields' => ['ID', 'user_login', 'display_name'],
+        'number' => 20,
+        'orderby' => 'display_name'
+    ]);
+    
+    wp_send_json_success($users);
+}

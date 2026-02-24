@@ -203,6 +203,13 @@ add_shortcode('ppc_repair', function ($atts) {
         <section class="ppc-card">
             <h2 class="ppc-h2">Comments</h2>
             <?php
+            // Enqueue mentions script
+            wp_enqueue_script('ppc-mentions', plugin_dir_url(__FILE__) . '../../../assets/js/ppc-mentions.js', [], '1.0', true);
+            wp_localize_script('ppc-mentions', 'ppcMentions', [
+                'ajaxUrl' => admin_url('admin-ajax.php'),
+                'nonce' => wp_create_nonce('ppc_mentions_nonce')
+            ]);
+
             // Enable comments for this post type
             $repair_post = get_post($repair_id);
             if ($repair_post) {
@@ -211,7 +218,7 @@ add_shortcode('ppc_repair', function ($atts) {
                 $original_post = $post;
                 $post = $repair_post;
                 setup_postdata($post);
-                
+
                 // Display existing comments
                 if (have_comments()) {
                     echo '<div style="margin-bottom: 20px;">';
@@ -222,14 +229,14 @@ add_shortcode('ppc_repair', function ($atts) {
                     ]);
                     echo '</div>';
                 }
-                
+
                 // Display comment form
                 comment_form([
                     'title_reply' => 'Add Comment',
                     'label_submit' => 'Post Comment',
-                    'comment_field' => '<p class="comment-form-comment"><label for="comment">Comment</label><textarea id="comment" name="comment" cols="45" rows="8" required></textarea></p>',
+                    'comment_field' => '<p class="comment-form-comment"><label for="comment">Comment</label><textarea id="comment" name="comment" cols="45" rows="4" required placeholder="Type @ to mention someone..."></textarea></p>',
                 ]);
-                
+
                 // Restore original post
                 $post = $original_post;
                 if ($original_post) {
