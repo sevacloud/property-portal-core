@@ -159,7 +159,7 @@ add_shortcode('ppc_repair', function ($atts) {
                                 </tr>
                             <?php endif; ?>
                             <tr>
-                                <th>Assigned Owner</th>
+                                <th>Project Worker</th>
                                 <td><?php echo esc_html($owner_name ?: 'Unassigned'); ?></td>
                             </tr>
                             <tr>
