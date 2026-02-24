@@ -80,13 +80,15 @@ add_action('acf/init', function () {
             ],
             [
                 'key' => 'field_ppc_property_manager',
-                'label' => 'Property Manager',
+                'label' => 'Managed By',
                 'name' => 'property_manager',
-                'type' => 'user',
-                'role' => ['staff', 'administrator'],
+                'type' => 'select',
+                'choices' => [
+                    'Together Housing Group' => 'Together Housing Group',
+                    'YWCA' => 'YWCA',
+                ],
                 'allow_null' => 1,
-                'multiple' => 0,
-                'return_format' => 'array',
+                'ui' => 1,
             ],
             [
                 'key' => 'field_ppc_property_status',

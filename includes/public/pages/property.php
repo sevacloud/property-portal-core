@@ -49,12 +49,14 @@ add_shortcode('ppc_property', function ($atts) {
     $main_photo = $get('property_main_photo');
     $manager = $get('property_manager');
 
-    $manager_name = '';
-    if (is_array($manager) && !empty($manager['display_name'])) $manager_name = (string) $manager['display_name'];
-    if (is_object($manager) && !empty($manager->display_name)) $manager_name = (string) $manager->display_name;
+    // Current field is a select string, but keep compatibility with older user-based values.
+    $managed_by = '';
+    if (is_string($manager) && $manager !== '') $managed_by = $manager;
+    if (is_array($manager) && !empty($manager['display_name'])) $managed_by = (string) $manager['display_name'];
+    if (is_object($manager) && !empty($manager->display_name)) $managed_by = (string) $manager->display_name;
     if (is_numeric($manager) && (int) $manager > 0) {
         $m = get_user_by('id', (int) $manager);
-        if ($m && !empty($m->display_name)) $manager_name = (string) $m->display_name;
+        if ($m && !empty($m->display_name)) $managed_by = (string) $m->display_name;
     }
 
     $main_photo_id = 0;
@@ -174,7 +176,7 @@ add_shortcode('ppc_property', function ($atts) {
                     <p><strong>Property Code:</strong> <?php echo esc_html($code ?: '-'); ?></p>
                     <p><strong>Region:</strong> <?php echo esc_html($region ?: '-'); ?></p>
                     <p><strong>Status:</strong> <?php echo esc_html($status ?: '-'); ?></p>
-                    <p><strong>Property Manager:</strong> <?php echo esc_html($manager_name ?: '-'); ?></p>
+                    <p><strong>Managed By:</strong> <?php echo esc_html($managed_by ?: '-'); ?></p>
                     <?php if (!empty($notes)): ?>
                         <p><strong>Notes:</strong> <?php echo esc_html($notes); ?></p>
                     <?php endif; ?>
