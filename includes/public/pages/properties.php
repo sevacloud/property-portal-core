@@ -48,7 +48,7 @@ add_shortcode('ppc_properties_overview', function () {
                         <?php foreach ($properties as $p): ?>
                             <tr>
                                 <td class="ppc-td">
-                                    <a class="ppc-link" href="<?php echo esc_url(ppc_property_page_url((int) $p->ID)); ?>">
+                                    <a class="ppc-link" href="<?php echo esc_url(ppc_page_url('property', (int) $p->ID)); ?>">
                                         <?php echo esc_html($p->post_title ?: '-'); ?>
                                     </a>
                                 </td>

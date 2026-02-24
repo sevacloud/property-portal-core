@@ -18,6 +18,7 @@ require_once __DIR__ . '/public/shortcodes.php';
 require_once __DIR__ . '/public/portal-pages.php';
 require_once __DIR__ . '/public/pages/properties.php';
 require_once __DIR__ . '/public/pages/property.php';
+require_once __DIR__ . '/public/pages/repairs.php';
 require_once __DIR__ . '/public/pages/repair.php';
 require_once __DIR__ . '/acf/acf-forms.php';
 

@@ -143,8 +143,21 @@ add_action('acf/save_post', function ($post_id) {
 /**
  * Shared helpers (safe to define once).
  */
+function ppc_page_url(string $type, int $id): string {
+    $routes = [
+        'property' => 'properties/property',
+        'repair' => 'repairs/repair',
+        'void' => 'voids/void',
+        'tenant' => 'tenants/tenant',
+        'tenancy' => 'tenancies/tenancy',
+    ];
+    
+    $route = $routes[$type] ?? $type;
+    return add_query_arg(['id' => $id], rtrim(ppc_portal_url($route), '/'));
+}
+
 function ppc_property_page_url(int $id): string {
-    return add_query_arg(['id' => $id], rtrim(ppc_portal_url('property'), '/'));
+    return ppc_page_url('property', $id);
 }
 
 function ppc_fmt_date($ymd): string {
