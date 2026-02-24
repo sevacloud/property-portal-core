@@ -252,6 +252,42 @@ function ppc_get_active_void_id_for_property(int $property_id): int {
 }
 
 /**
+ * Find the latest void start date for a property (Y-m-d).
+ */
+function ppc_get_last_void_date_for_property(int $property_id): string {
+    if ($property_id <= 0) return '';
+
+    $voids = get_posts([
+        'post_type'      => 'ppm_void',
+        'post_status'    => 'publish',
+        'posts_per_page' => 1,
+        'orderby'        => 'meta_value',
+        'meta_key'       => 'void_start_date',
+        'order'          => 'DESC',
+        'meta_query'     => [
+            [
+                'key'     => 'void_property',
+                'value'   => (string) $property_id,
+                'compare' => '=',
+            ],
+            [
+                'key'     => 'void_start_date',
+                'value'   => '',
+                'compare' => '!=',
+            ],
+        ],
+    ]);
+
+    if (empty($voids)) return '';
+
+    $last = function_exists('get_field')
+        ? get_field('void_start_date', (int) $voids[0]->ID)
+        : get_post_meta((int) $voids[0]->ID, 'void_start_date', true);
+
+    return is_string($last) ? $last : '';
+}
+
+/**
  * Derive property occupancy status from related tenancy/void records.
  * Priority: occupied (active tenancy) > maintenance (active void) > vacant.
  */
@@ -296,6 +332,26 @@ function ppc_sync_property_status_from_related(int $property_id): void {
 }
 
 /**
+ * Persist latest void date on the property record.
+ */
+function ppc_sync_property_last_void_date_from_voids(int $property_id): void {
+    if ($property_id <= 0 || get_post_type($property_id) !== 'ppm_property') return;
+
+    $next = ppc_get_last_void_date_for_property($property_id);
+    $current = function_exists('get_field')
+        ? (string) get_field('property_last_void_date', $property_id)
+        : (string) get_post_meta($property_id, 'property_last_void_date', true);
+
+    if ($current !== $next) {
+        if (function_exists('update_field')) {
+            update_field('property_last_void_date', $next, $property_id);
+        } else {
+            update_post_meta($property_id, 'property_last_void_date', $next);
+        }
+    }
+}
+
+/**
  * Keep property_status synced when related records are saved.
  */
 add_action('acf/save_post', function ($post_id) {
@@ -320,6 +376,9 @@ add_action('acf/save_post', function ($post_id) {
 
     if ($property_id > 0) {
         ppc_sync_property_status_from_related($property_id);
+        if ($post_type === 'ppm_void') {
+            ppc_sync_property_last_void_date_from_voids($property_id);
+        }
     }
 }, 30);
 
@@ -334,6 +393,9 @@ add_action('trashed_post', function ($post_id) {
     $property_id = (int) get_post_meta($post_id, $meta_key, true);
     if ($property_id > 0) {
         ppc_sync_property_status_from_related($property_id);
+        if ($post_type === 'ppm_void') {
+            ppc_sync_property_last_void_date_from_voids($property_id);
+        }
     }
 });
 
@@ -345,6 +407,9 @@ add_action('untrashed_post', function ($post_id) {
     $property_id = (int) get_post_meta($post_id, $meta_key, true);
     if ($property_id > 0) {
         ppc_sync_property_status_from_related($property_id);
+        if ($post_type === 'ppm_void') {
+            ppc_sync_property_last_void_date_from_voids($property_id);
+        }
     }
 });
 
