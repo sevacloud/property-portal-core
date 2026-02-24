@@ -262,10 +262,18 @@
 
 .ppc-property-details-grid__media {
   min-height: 1px;
+  max-width: 200px;
 }
 
 .ppc-property-image {
+  max-width: 200px;
   width: 100%;
+  height: auto;
+  display: block;
+}
+
+.ppc-property-details-grid__media img {
+  max-width: 100%;
   height: auto;
   display: block;
 }
