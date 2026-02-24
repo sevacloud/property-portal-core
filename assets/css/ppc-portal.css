@@ -653,6 +653,9 @@
   background: var(--ppc-color-bg);
   border: 0;
   border-bottom: 3px solid var(--ppc-color-border-light);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   padding: 20px;
   box-shadow: var(--ppc-shadow-sm);
 }
