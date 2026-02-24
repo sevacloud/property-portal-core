@@ -129,7 +129,7 @@ add_shortcode('ppc_repairs_overview', function () {
         <section class="ppc-card">
             <h2 class="ppc-h2">Summary</h2>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px;">
-                <a href="<?php echo esc_url(add_query_arg(['status' => ''], ppc_portal_url('repairs'))); ?>" class="ppc-summary-card" style="background: var(--ppc-color-bg-lightest);">
+                <a href="<?php echo esc_url(add_query_arg(['status' => ''], ppc_portal_url('repairs'))); ?>" class="ppc-summary-card ppc-summary-card--white">
                     <div style="font-size: 24px; font-weight: 800; color: var(--ppc-color-h1);"><?php echo $open_count; ?></div>
                     <div style="font-size: 13px; color: var(--ppc-color-text-muted);">Open Repairs</div>
                 </a>
